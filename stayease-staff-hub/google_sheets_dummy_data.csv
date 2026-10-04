@@ -1,0 +1,59 @@
+=== TAB 1: Staff_Users ===
+Staff_ID,Name,Role,Email,Phone,Floor,Shift,Duty,Employment,Password
+EMP-1001,Daniel Okoye,manager,daniel.o@stayease.com,+91 98110 11001,All Floors,08:00 - 18:00,On Duty,Active,password123
+EMP-2001,Anita Sharma,reception,anita.s@stayease.com,+91 98110 22101,Lobby / Reception,07:00 - 15:00,On Duty,Active,password123
+EMP-2002,Peter Nwachukwu,reception,peter.n@stayease.com,+91 98110 22102,Lobby / Reception,15:00 - 23:00,On Duty,Active,password123
+EMP-2003,Omar Hassan,reception,omar.h@stayease.com,+91 98110 22103,Guest Relations,08:00 - 16:00,On Duty,Active,password123
+EMP-2004,Emily Zhang,reception,emily.z@stayease.com,+91 98110 22104,Front Desk,07:00 - 15:00,Off Duty,Active,password123
+EMP-2005,Marcus Brody,reception,marcus.b@stayease.com,+91 98110 22105,Concierge Desk,11:00 - 19:00,On Duty,Active,password123
+EMP-3001,Grace Okafor,housekeeping,grace.o@stayease.com,+91 98110 33101,Floor 1,08:00 - 16:00,On Duty,Active,password123
+EMP-3002,Carlos Rodriguez,housekeeping,carlos.r@stayease.com,+91 98110 33102,Floor 2,08:00 - 16:00,On Duty,Active,password123
+EMP-3003,Laura Fernandez,housekeeping,laura.f@stayease.com,+91 98110 33103,Floor 3,16:00 - 00:00,On Duty,Active,password123
+EMP-3004,Austin Patel,housekeeping,austin.p@stayease.com,+91 98110 33104,Floor 4,08:00 - 16:00,Off Duty,Active,password123
+EMP-3005,Keerthi Reddy,housekeeping,keerthi.r@stayease.com,+91 98110 33105,Laundry / Linen,09:00 - 17:00,On Duty,Active,password123
+EMP-4001,Ravi Kumar,maintenance,ravi.k@stayease.com,+91 98110 44101,HVAC / Engineering,08:00 - 17:00,On Duty,Active,password123
+EMP-4002,David Miller,maintenance,david.m@stayease.com,+91 98110 44102,Electrical Tech,08:00 - 17:00,On Duty,Active,password123
+EMP-4003,Vijay Singh,maintenance,vijay.s@stayease.com,+91 98110 44103,Plumbing Spec,12:00 - 20:00,On Duty,Active,password123
+EMP-4004,Harish Verma,maintenance,harish.v@stayease.com,+91 98110 44104,General Electrician,08:00 - 17:00,Off Duty,Active,password123
+EMP-4005,Dinesh Kumar,maintenance,dinesh.k@stayease.com,+91 98110 44105,Night Maintenance,23:00 - 07:00,Off Duty,Active,password123
+EMP-5001,Mei Ling,fnb,mei.t@stayease.com,+91 98110 55101,Main Restaurant,07:00 - 16:00,On Duty,Active,password123
+EMP-5002,Sofia Rossi,fnb,sofia.r@stayease.com,+91 98110 55102,Room Service,06:00 - 14:00,On Duty,Active,password123
+EMP-5003,Samuel Green,fnb,samuel.g@stayease.com,+91 98110 55103,Kitchen / Main Prep,11:00 - 21:00,On Duty,Active,password123
+EMP-5004,Priya Sharma,fnb,priya.s@stayease.com,+91 98110 55104,Bar & Lounge,16:00 - 01:00,Off Duty,Active,password123
+EMP-5005,Alex Wong,fnb,alex.w@stayease.com,+91 98110 55105,Banquets & Events,10:00 - 19:00,On Duty,Active,password123
+
+=== TAB 2: Tasks ===
+Task_ID,Room_Number,Task_Type,Department,Assigned_To,Priority,Status,Assigned_Time
+TSK-101,102,Turn-down & Bed Linen Refresh,housekeeping,Grace Okafor,High,Pending,Today 09:15
+TSK-102,205,Bathroom Sanitization & Amenities Refill,housekeeping,Carlos Rodriguez,Medium,In Progress,Today 09:30
+TSK-103,308,HVAC Temperature Calibration,maintenance,Ravi Kumar,High,Pending,Today 10:00
+TSK-104,412,Plumbing Leak Inspection,maintenance,Vijay Singh,Emergency,In Progress,Today 10:15
+TSK-105,501,VIP Express Breakfast & Champagne,fnb,Sofia Rossi,High,Completed,Today 08:00
+TSK-106,104,Deep Carpet Cleaning,housekeeping,Grace Okafor,Low,Completed,Today 07:45
+TSK-107,301,Lighting & Smart Switch Replacement,maintenance,David Miller,Medium,Pending,Today 10:30
+TSK-108,210,High Tea & Pastry Tray Delivery,fnb,Mei Ling,Medium,In Progress,Today 10:45
+
+=== TAB 3: Guest_Requests ===
+Request_ID,Room_Number,Guest_Name,Request_Type,Department,Priority,Time_Received,Status
+REQ-901,305,A. Sharma,Panic Button / Medical Assist,Reception,Emergency,Just now,New
+REQ-902,217,P. Nair,Bathroom Water Leak,Housekeeping,High,2 mins ago,In Progress
+REQ-903,512,M. Tanaka,VIP Luggage & Express Bill,Reception,High,5 mins ago,Assigned
+REQ-904,402,R. Kapoor,Extra Foam Pillows,Housekeeping,Medium,10 mins ago,Pending
+REQ-905,108,J. Smith,Fruit Platter & Sparkling Water,F&B,Low,15 mins ago,Completed
+
+=== TAB 4: Rooms ===
+Room_Number,Floor,Room_Type,Status,Guest_Name,Check_Out_Time
+101,Floor 1,Deluxe King,Clean,Unoccupied,--:--
+102,Floor 1,Executive Suite,Cleaning Needed,R. Verma,Today 12:00
+205,Floor 2,Deluxe Twin,In Progress,M. Garcia,Tomorrow 11:00
+305,Floor 3,Presidential Suite,Occupied,A. Sharma,Today 14:00
+412,Floor 4,Deluxe King,Maintenance,V. Kapoor,Today 16:00
+501,Floor 5,Penthouse Suite,Clean,K. Patel,In 2 Days
+
+=== TAB 5: Attendance ===
+Log_ID,Staff_Name,Role,Date,Sign_In_Time,Sign_Out_Time,Status
+ATT-801,Anita Sharma,reception,04/08/2026,07:02,--:--,On Duty
+ATT-802,Grace Okafor,housekeeping,04/08/2026,08:00,--:--,On Duty
+ATT-803,Ravi Kumar,maintenance,04/08/2026,08:05,--:--,On Duty
+ATT-804,Mei Ling,fnb,04/08/2026,07:15,--:--,On Duty
+ATT-805,Daniel Okoye,manager,04/08/2026,08:00,--:--,On Duty

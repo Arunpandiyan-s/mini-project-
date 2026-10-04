@@ -1,0 +1,9 @@
+Task_ID,Room_Number,Task_Type,Department,Assigned_To,Priority,Status,Assigned_Time
+TSK-101,102,Turn-down & Bed Linen Refresh,housekeeping,Grace Okafor,High,Pending,Today 09:15
+TSK-102,205,Bathroom Sanitization & Amenities Refill,housekeeping,Carlos Rodriguez,Medium,In Progress,Today 09:30
+TSK-103,308,HVAC Temperature Calibration,maintenance,Ravi Kumar,High,Pending,Today 10:00
+TSK-104,412,Plumbing Leak Inspection,maintenance,Vijay Singh,Emergency,In Progress,Today 10:15
+TSK-105,501,VIP Express Breakfast & Champagne,fnb,Sofia Rossi,High,Completed,Today 08:00
+TSK-106,104,Deep Carpet Cleaning,housekeeping,Grace Okafor,Low,Completed,Today 07:45
+TSK-107,301,Lighting & Smart Switch Replacement,maintenance,David Miller,Medium,Pending,Today 10:30
+TSK-108,210,High Tea & Pastry Tray Delivery,fnb,Mei Ling,Medium,In Progress,Today 10:45

@@ -1,0 +1,36 @@
+{
+  "spreadsheetTitle": "StayEase Staff Hub — Operations Database",
+  "exportedAt": "2026-08-04T11:45:00.000Z",
+  "tabs": {
+    "Staff_Users": [
+      { "staff_id": "EMP-1001", "name": "Daniel Okoye", "role": "manager", "email": "daniel.o@stayease.com", "phone": "+91 98110 11001", "floor": "All Floors", "shift": "08:00 - 18:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-2001", "name": "Anita Sharma", "role": "reception", "email": "anita.s@stayease.com", "phone": "+91 98110 22101", "floor": "Lobby / Reception", "shift": "07:00 - 15:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-2002", "name": "Peter Nwachukwu", "role": "reception", "email": "peter.n@stayease.com", "phone": "+91 98110 22102", "floor": "Lobby / Reception", "shift": "15:00 - 23:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-2003", "name": "Omar Hassan", "role": "reception", "email": "omar.h@stayease.com", "phone": "+91 98110 22103", "floor": "Guest Relations", "shift": "08:00 - 16:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-2004", "name": "Emily Zhang", "role": "reception", "email": "emily.z@stayease.com", "phone": "+91 98110 22104", "floor": "Front Desk", "shift": "07:00 - 15:00", "duty": "Off Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-2005", "name": "Marcus Brody", "role": "reception", "email": "marcus.b@stayease.com", "phone": "+91 98110 22105", "floor": "Concierge Desk", "shift": "11:00 - 19:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-3001", "name": "Grace Okafor", "role": "housekeeping", "email": "grace.o@stayease.com", "phone": "+91 98110 33101", "floor": "Floor 1", "shift": "08:00 - 16:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-3002", "name": "Carlos Rodriguez", "role": "housekeeping", "email": "carlos.r@stayease.com", "phone": "+91 98110 33102", "floor": "Floor 2", "shift": "08:00 - 16:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-3003", "name": "Laura Fernandez", "role": "housekeeping", "email": "laura.f@stayease.com", "phone": "+91 98110 33103", "floor": "Floor 3", "shift": "16:00 - 00:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-3004", "name": "Austin Patel", "role": "housekeeping", "email": "austin.p@stayease.com", "phone": "+91 98110 33104", "floor": "Floor 4", "shift": "08:00 - 16:00", "duty": "Off Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-3005", "name": "Keerthi Reddy", "role": "housekeeping", "email": "keerthi.r@stayease.com", "phone": "+91 98110 33105", "floor": "Laundry / Linen", "shift": "09:00 - 17:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-4001", "name": "Ravi Kumar", "role": "maintenance", "email": "ravi.k@stayease.com", "phone": "+91 98110 44101", "floor": "HVAC / Engineering", "shift": "08:00 - 17:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-4002", "name": "David Miller", "role": "maintenance", "email": "david.m@stayease.com", "phone": "+91 98110 44102", "floor": "Electrical Tech", "shift": "08:00 - 17:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-4003", "name": "Vijay Singh", "role": "maintenance", "email": "vijay.s@stayease.com", "phone": "+91 98110 44103", "floor": "Plumbing Spec", "shift": "12:00 - 20:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-4004", "name": "Harish Verma", "role": "maintenance", "email": "harish.v@stayease.com", "phone": "+91 98110 44104", "floor": "General Electrician", "shift": "08:00 - 17:00", "duty": "Off Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-4005", "name": "Dinesh Kumar", "role": "maintenance", "email": "dinesh.k@stayease.com", "phone": "+91 98110 44105", "floor": "Night Maintenance", "shift": "23:00 - 07:00", "duty": "Off Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-5001", "name": "Mei Ling", "role": "fnb", "email": "mei.t@stayease.com", "phone": "+91 98110 55101", "floor": "Main Restaurant", "shift": "07:00 - 16:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-5002", "name": "Sofia Rossi", "role": "fnb", "email": "sofia.r@stayease.com", "phone": "+91 98110 55102", "floor": "Room Service", "shift": "06:00 - 14:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-5003", "name": "Samuel Green", "role": "fnb", "email": "samuel.g@stayease.com", "phone": "+91 98110 55103", "floor": "Kitchen / Main Prep", "shift": "11:00 - 21:00", "duty": "On Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-5004", "name": "Priya Sharma", "role": "fnb", "email": "priya.s@stayease.com", "phone": "+91 98110 55104", "floor": "Bar & Lounge", "shift": "16:00 - 01:00", "duty": "Off Duty", "employment": "Active", "password": "password123" },
+      { "staff_id": "EMP-5005", "name": "Alex Wong", "role": "fnb", "email": "alex.w@stayease.com", "phone": "+91 98110 55105", "floor": "Banquets & Events", "shift": "10:00 - 19:00", "duty": "On Duty", "employment": "Active", "password": "password123" }
+    ],
+    "Tasks": [
+      { "Task_ID": "TSK-101", "Room_Number": "102", "Task_Type": "Turn-down & Bed Linen Refresh", "Department": "housekeeping", "Assigned_To": "Grace Okafor", "Priority": "High", "Status": "Pending", "Assigned_Time": "Today 09:15" },
+      { "Task_ID": "TSK-102", "Room_Number": "205", "Task_Type": "Bathroom Sanitization & Amenities Refill", "Department": "housekeeping", "Assigned_To": "Carlos Rodriguez", "Priority": "Medium", "Status": "In Progress", "Assigned_Time": "Today 09:30" },
+      { "Task_ID": "TSK-103", "Room_Number": "308", "Task_Type": "HVAC Temperature Calibration", "Department": "maintenance", "Assigned_To": "Ravi Kumar", "Priority": "High", "Status": "Pending", "Assigned_Time": "Today 10:00" },
+      { "Task_ID": "TSK-104", "Room_Number": "412", "Task_Type": "Plumbing Leak Inspection", "Department": "maintenance", "Assigned_To": "Vijay Singh", "Priority": "Emergency", "Status": "In Progress", "Assigned_Time": "Today 10:15" },
+      { "Task_ID": "TSK-105", "Room_Number": "501", "Task_Type": "VIP Express Breakfast & Champagne", "Department": "fnb", "Assigned_To": "Sofia Rossi", "Priority": "High", "Status": "Completed", "Assigned_Time": "Today 08:00" }
+    ]
+  }
+}

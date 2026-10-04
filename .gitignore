@@ -1,0 +1,30 @@
+# Node modules & build artifacts
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.output/
+**/.output/
+.tanstack/
+**/.tanstack/
+.wrangler/
+**/.wrangler/
+
+# Python virtual environment & cache
+venv/
+**/venv/
+.venv/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+
+# Databases & local environment
+stayease.db
+*.db-journal
+.env.local
+*.log
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store

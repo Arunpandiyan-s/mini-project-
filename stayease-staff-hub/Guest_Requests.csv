@@ -1,0 +1,6 @@
+Request_ID,Room_Number,Guest_Name,Request_Type,Department,Priority,Time_Received,Status
+REQ-901,305,A. Sharma,Panic Button / Medical Assist,Reception,Emergency,Just now,New
+REQ-902,217,P. Nair,Bathroom Water Leak,Housekeeping,High,2 mins ago,In Progress
+REQ-903,512,M. Tanaka,VIP Luggage & Express Bill,Reception,High,5 mins ago,Assigned
+REQ-904,402,R. Kapoor,Extra Foam Pillows,Housekeeping,Medium,10 mins ago,Pending
+REQ-905,108,J. Smith,Fruit Platter & Sparkling Water,F&B,Low,15 mins ago,Completed

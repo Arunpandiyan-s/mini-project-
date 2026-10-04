@@ -1,0 +1,7 @@
+Room_Number,Floor,Room_Type,Status,Guest_Name,Check_Out_Time
+101,Floor 1,Deluxe King,Clean,Unoccupied,--:--
+102,Floor 1,Executive Suite,Cleaning Needed,R. Verma,Today 12:00
+205,Floor 2,Deluxe Twin,In Progress,M. Garcia,Tomorrow 11:00
+305,Floor 3,Presidential Suite,Occupied,A. Sharma,Today 14:00
+412,Floor 4,Deluxe King,Maintenance,V. Kapoor,Today 16:00
+501,Floor 5,Penthouse Suite,Clean,K. Patel,In 2 Days

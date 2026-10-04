@@ -1,0 +1,1 @@
+# StayEase Backend FastAPI Application
