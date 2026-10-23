@@ -7,14 +7,15 @@ from app.core.schema_migrations import run_safe_schema_migrations
 from app.services.seed import seed_development_data
 from app.routes import (
     auth, staff, guest, room, reservation, guest_request, task,
-    assignment, websocket, notification, operations, guest_auth, guest_portal
+    assignment, websocket, notification, operations, guest_auth, guest_portal,
+    admin, message
 )
-
-# Run schema migrations first (idempotent alterations)
-run_safe_schema_migrations()
 
 # Automatically create all tables on startup (Phase 1 simplicity)
 Base.metadata.create_all(bind=engine)
+
+# Run schema migrations (idempotent alterations)
+run_safe_schema_migrations()
 
 # Seed developer admin and rooms on startup
 db = SessionLocal()
@@ -55,6 +56,8 @@ app.include_router(notification.router)
 app.include_router(operations.router)
 app.include_router(guest_auth.router)
 app.include_router(guest_portal.router)
+app.include_router(admin.router)
+app.include_router(message.router)
 
 
 

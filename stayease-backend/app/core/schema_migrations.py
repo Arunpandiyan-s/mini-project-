@@ -13,6 +13,9 @@ def run_safe_schema_migrations():
     logger.info("Checking database schema migrations...")
     try:
         inspector = inspect(engine)
+        if not inspector.has_table("guests"):
+            logger.info("Table 'guests' does not exist yet. Skipping safe migration.")
+            return
         columns = [col["name"] for col in inspector.get_columns("guests")]
         
         if "password_hash" not in columns:

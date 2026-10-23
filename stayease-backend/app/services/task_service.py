@@ -5,7 +5,7 @@ from app.models.task import Task
 from app.models.room import Room
 from app.models.guest_request import GuestRequest
 from app.models.staff import Staff
-from app.models.enums import StaffRole, TaskStatus, CleaningStatus, RequestStatus, Department
+from app.models.enums import StaffRole, TaskStatus, CleaningStatus, RequestStatus, Department, MaintenanceStatus
 from app.services.audit_service import log_event
 from app.services.assignment_service import sync_staff_availability, trigger_pending_assignments
 
@@ -283,6 +283,27 @@ def complete_task(task_id: str, current_staff: Staff, db: Session) -> Task:
                     entity_type="room",
                     entity_id=room.room_number,
                     description=f"Room {room.room_number} cleaning completed successfully.",
+                    commit=False
+                )
+
+        # Maintenance task completion: update room maintenance status to GOOD if no other open maintenance tasks
+        if task.department == Department.MAINTENANCE and task.room:
+            other_open_maint = db.query(Task).filter(
+                Task.room_id == task.room_id,
+                Task.department == Department.MAINTENANCE,
+                Task.id != task.id,
+                Task.status.in_([TaskStatus.PENDING, TaskStatus.ASSIGNED, TaskStatus.ACCEPTED, TaskStatus.IN_PROGRESS])
+            ).first()
+            if not other_open_maint:
+                task.room.maintenance_status = MaintenanceStatus.GOOD
+                log_event(
+                    db=db,
+                    event_type="ROOM_MAINTENANCE_RESOLVED",
+                    actor_type="staff",
+                    actor_id=current_staff.staff_id,
+                    entity_type="room",
+                    entity_id=task.room.room_number,
+                    description=f"Maintenance for Room {task.room.room_number} resolved by {current_staff.name}.",
                     commit=False
                 )
 

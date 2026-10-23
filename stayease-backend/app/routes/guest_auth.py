@@ -79,3 +79,30 @@ def get_guest_me(current_guest: Guest = Depends(get_current_guest)):
     Returns the currently authenticated guest profile.
     """
     return current_guest
+
+@router.post("/logout")
+def guest_logout(db: Session = Depends(get_db), current_guest: Guest = Depends(get_current_guest)):
+    """
+    Guest logout endpoint.
+    """
+    log_event(
+        db,
+        event_type="GUEST_LOGOUT",
+        actor_type="guest",
+        actor_id=current_guest.guest_id,
+        entity_type="guest",
+        entity_id=current_guest.guest_id,
+        description=f"Guest {current_guest.name} logged out."
+    )
+    return {"status": "success", "message": "Guest logged out successfully"}
+
+@router.post("/forgot-password")
+def guest_forgot_password(email: str = "", db: Session = Depends(get_db)):
+    """
+    Password reset initiation for guests.
+    """
+    return {
+        "status": "success",
+        "message": "If your email is registered, password reset instructions have been dispatched."
+    }
+

@@ -242,6 +242,7 @@ def check_in(
     return check_in_reservation(reservation_id, db, current_staff.staff_id)
 
 @router.post("/{reservation_id}/checkout", response_model=ReservationResponse)
+@router.post("/{reservation_id}/check-out", response_model=ReservationResponse)
 def checkout(
     reservation_id: str,
     db: Session = Depends(get_db),
@@ -252,3 +253,4 @@ def checkout(
     Accessible to: ADMIN, RECEPTION.
     """
     return checkout_reservation(reservation_id, db, current_staff.staff_id)
+

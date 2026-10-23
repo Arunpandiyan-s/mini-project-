@@ -132,12 +132,14 @@ def start(
     return start_task(task_id, current_staff, db)
 
 @router.patch("/{task_id}/complete", response_model=TaskResponse)
+@router.patch("/{task_id}/resolve", response_model=TaskResponse)
 def complete(
     task_id: str,
     db: Session = Depends(get_db),
     current_staff: Staff = Depends(get_current_staff)
 ):
     """
-    Completes an in-progress task.
+    Completes or resolves an in-progress task.
     """
     return complete_task(task_id, current_staff, db)
+

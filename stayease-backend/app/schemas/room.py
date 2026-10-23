@@ -44,3 +44,14 @@ class RoomUpdate(BaseModel):
     # to protect hotel workflow boundaries from generic PATCH bypasses.
     room_type: Optional[str] = Field(None, min_length=1, max_length=100)
     floor: Optional[int] = Field(None, ge=1)
+
+class RoomInspectionRequest(BaseModel):
+    status: str = Field(..., description="'pass' or 'fail'")
+    reason: Optional[str] = Field(None, description="Reason if inspection failed")
+    notes: Optional[str] = Field(None, description="General inspection notes")
+
+class RoomMaintenanceReportRequest(BaseModel):
+    issue: str = Field(..., min_length=3, max_length=500, description="Detailed defect description")
+    priority: Optional[str] = Field("high", description="low, medium, high, urgent")
+    blocks_occupancy: bool = Field(True, description="Whether this issue blocks guest occupancy")
+

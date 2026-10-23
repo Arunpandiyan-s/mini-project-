@@ -15,7 +15,7 @@ from app.services.seed import seed_development_data
 from app.config import settings
 
 # Use a separate SQLite database for testing
-TEST_DATABASE_URL = "sqlite:///./test_stayease.db"
+TEST_DATABASE_URL = "sqlite:///./test_auth_staff.db"
 
 engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -26,17 +26,20 @@ def setup_db():
     Sets up a fresh test database for each individual test case,
     seeding the default admin, and cleans up tables afterwards.
     """
+    app.dependency_overrides[get_db] = override_get_db
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
     seed_development_data(db)
     yield db
     db.close()
     Base.metadata.drop_all(bind=engine)
+    engine.dispose()
+    app.dependency_overrides.clear()
     
     # Try to delete the file
-    if os.path.exists("./test_stayease.db"):
+    if os.path.exists("./test_auth_staff.db"):
         try:
-            os.remove("./test_stayease.db")
+            os.remove("./test_auth_staff.db")
         except PermissionError:
             pass
 
@@ -47,8 +50,6 @@ def override_get_db():
         yield db
     finally:
         db.close()
-
-app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
 

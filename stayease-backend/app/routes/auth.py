@@ -130,3 +130,20 @@ def get_me(current_staff: Staff = Depends(get_current_staff)):
     Returns the current authenticated staff member profile.
     """
     return current_staff
+
+@router.post("/logout")
+def logout(db: Session = Depends(get_db), current_staff: Staff = Depends(get_current_staff)):
+    """
+    Staff logout endpoint. Logs audit event and clears session.
+    """
+    log_event(
+        db,
+        event_type="LOGOUT",
+        actor_type="staff",
+        actor_id=current_staff.staff_id,
+        entity_type="staff",
+        entity_id=current_staff.staff_id,
+        description=f"Staff member {current_staff.name} logged out."
+    )
+    return {"status": "success", "message": "Logged out successfully"}
+

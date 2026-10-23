@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List
+from typing import List, Optional
+from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
@@ -546,3 +547,88 @@ def list_guest_bookings(
             created_at=r.created_at
         ) for r in res_list
     ]
+
+class GuestPreRegisterPayload(BaseModel):
+    reservation_id: str
+    estimated_arrival: Optional[str] = None
+    id_document_number: Optional[str] = None
+    special_requests: Optional[str] = None
+    emergency_contact: Optional[str] = None
+
+@router.post("/pre-register")
+def pre_register_stay(
+    payload: GuestPreRegisterPayload,
+    db: Session = Depends(get_db),
+    current_guest: Optional[Guest] = Depends(get_current_guest)
+):
+    """
+    Complete digital pre-registration for a stay.
+    Allows guests to submit arrival time, ID document details, and preferences in advance.
+    """
+    res = db.query(Reservation).filter(
+        func.lower(Reservation.reservation_id) == payload.reservation_id.strip().lower()
+    ).first()
+
+    if not res:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Reservation '{payload.reservation_id}' not found."
+        )
+
+    if current_guest and res.guest_id != current_guest.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not authorized to pre-register this reservation."
+        )
+
+    guest = res.guest
+    room = res.room
+
+    # Audit log
+    log_event(
+        db,
+        event_type="GUEST_PRE_REGISTERED",
+        actor_type="guest",
+        actor_id=guest.guest_id if guest else "UNKNOWN",
+        entity_type="reservation",
+        entity_id=res.reservation_id,
+        description=f"Guest {guest.name if guest else 'Guest'} pre-registered for Room {room.room_number if room else 'TBD'}. ETA: {payload.estimated_arrival or 'Not specified'}"
+    )
+
+    # Reception notification
+    from app.services.notification_service import create_notification
+    from app.models.enums import StaffRole
+    create_notification(
+        db,
+        recipient_staff_id="ALL_RECEPTION",
+        type="reservation.pre_registered",
+        title="Guest Digital Pre-Registration",
+        message=f"Guest {guest.name if guest else 'Guest'} has completed digital pre-registration for Room {room.room_number if room else 'TBD'}.",
+        entity_type="reservation",
+        entity_id=res.reservation_id,
+        priority="normal"
+    )
+
+    emit_event(
+        "reservation.pre_registered",
+        {
+            "reservation_id": res.reservation_id,
+            "guest_name": guest.name if guest else "Guest",
+            "room_number": room.room_number if room else "TBD",
+            "estimated_arrival": payload.estimated_arrival
+        },
+        recipient_role=StaffRole.RECEPTION,
+        send_to_all_admins=True
+    )
+
+    return {
+        "status": "success",
+        "message": "Pre-registration completed successfully! Your digital check-in is confirmed.",
+        "reservation_id": res.reservation_id,
+        "room_number": room.room_number if room else "TBD",
+        "room_type": room.room_type if room else "Standard",
+        "check_in": res.check_in,
+        "check_out": res.check_out,
+        "guest_name": guest.name if guest else "Guest"
+    }
+

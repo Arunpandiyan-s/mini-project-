@@ -25,22 +25,25 @@ from app.services.seed import seed_development_data
 from app.services.room_service import is_room_ready_for_checkin
 
 # Use a separate SQLite database for operations testing
-TEST_DATABASE_URL = "sqlite:///./test_stayease.db"
+TEST_DATABASE_URL = "sqlite:///./test_operations.db"
 
 engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 @pytest.fixture(scope="function", autouse=True)
 def setup_ops_db():
+    app.dependency_overrides[get_db] = override_get_db
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
     seed_development_data(db)
     yield db
     db.close()
     Base.metadata.drop_all(bind=engine)
-    if os.path.exists("./test_stayease.db"):
+    engine.dispose()
+    app.dependency_overrides.clear()
+    if os.path.exists("./test_operations.db"):
         try:
-            os.remove("./test_stayease.db")
+            os.remove("./test_operations.db")
         except PermissionError:
             pass
 
@@ -51,8 +54,6 @@ def override_get_db():
         yield db
     finally:
         db.close()
-
-app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
 

@@ -23,6 +23,7 @@ from app.models.audit_log import AuditLog
 from app.models.assignment_rotation import AssignmentRotation
 from app.models.notification import Notification
 from app.models.guest_notification import GuestNotification
+from app.models.message import Message
 
 __all__ = [
     "StaffRole",
@@ -47,5 +48,6 @@ __all__ = [
     "AuditLog",
     "AssignmentRotation",
     "Notification",
-    "GuestNotification"
+    "GuestNotification",
+    "Message"
 ]

@@ -26,13 +26,14 @@ from app.core.security import hash_password, create_access_token
 from app.services.seed import seed_development_data
 from app.services.connection_manager import manager
 
-TEST_DATABASE_URL = "sqlite:///./test_stayease.db"
+TEST_DATABASE_URL = "sqlite:///./test_ws_notifications.db"
 
 engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 @pytest.fixture(scope="function", autouse=True)
 def db():
+    app.dependency_overrides[get_db] = override_get_db
     Base.metadata.create_all(bind=engine)
     db_session = TestingSessionLocal()
     seed_development_data(db_session)
@@ -40,9 +41,10 @@ def db():
     db_session.close()
     Base.metadata.drop_all(bind=engine)
     engine.dispose()
-    if os.path.exists("./test_stayease.db"):
+    app.dependency_overrides.clear()
+    if os.path.exists("./test_ws_notifications.db"):
         try:
-            os.remove("./test_stayease.db")
+            os.remove("./test_ws_notifications.db")
         except PermissionError:
             pass
 
@@ -54,7 +56,6 @@ def override_get_db():
     finally:
         db.close()
 
-app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
 
 # Helper functions
