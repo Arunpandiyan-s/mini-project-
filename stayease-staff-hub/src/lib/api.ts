@@ -25,6 +25,8 @@ import type {
   BackendTaskStatus,
   BackendTaskPriority,
   BackendDepartment,
+  AdminDashboardStats,
+  ApiStaffMessage,
 } from "./types";
 
 // ─── CONFIG ────────────────────────────────────────────────────────────────
@@ -356,11 +358,95 @@ export async function markAllNotificationsRead(): Promise<void> {
   return apiFetch<void>("/api/notifications/read-all", { method: "PATCH" });
 }
 
-// ─── OPERATIONS FEED (ADMIN ONLY) ──────────────────────────────────────────
+// ─── OPERATIONS FEED & ADMIN METRICS (ADMIN ONLY) ─────────────────────────
 
 /** GET /api/operations/feed — Admin-only operational audit log feed. */
 export async function getOperationsFeed(limit = 50): Promise<ApiOperationEvent[]> {
   return apiFetch<ApiOperationEvent[]>(`/api/operations/feed?limit=${limit}`);
+}
+
+/** GET /api/admin/dashboard/stats — Live administrative dashboard statistics */
+export async function getAdminDashboardStats(): Promise<AdminDashboardStats> {
+  return apiFetch<AdminDashboardStats>("/api/admin/dashboard/stats");
+}
+
+/** GET /api/admin/reports — Operational reports & key performance metrics */
+export async function getAdminReports(): Promise<Record<string, unknown>> {
+  return apiFetch<Record<string, unknown>>("/api/admin/reports");
+}
+
+/** GET /api/admin/audit-logs — Full administrative audit logs */
+export async function getAdminAuditLogs(limit = 100): Promise<Record<string, unknown>[]> {
+  return apiFetch<Record<string, unknown>[]>(`/api/admin/audit-logs?limit=${limit}`);
+}
+
+// ─── ROOM LIFECYCLE: INSPECTION & MAINTENANCE ─────────────────────────────
+
+/** POST /api/rooms/{room_number}/inspection — Submit housekeeping inspection pass/fail */
+export async function inspectRoom(
+  roomNumber: string,
+  passed: boolean,
+  notes?: string
+): Promise<ApiRoom> {
+  return apiFetch<ApiRoom>(`/api/rooms/${roomNumber}/inspection`, {
+    method: "POST",
+    body: JSON.stringify({ passed, notes: notes || "" }),
+  });
+}
+
+/** POST /api/rooms/{room_number}/maintenance — Report room defect and dispatch maintenance task */
+export async function reportRoomMaintenance(
+  roomNumber: string,
+  payload: { issue_description: string; priority?: string; block_occupancy?: boolean }
+): Promise<{ status: string; task_id: string; room_number: string }> {
+  return apiFetch<{ status: string; task_id: string; room_number: string }>(
+    `/api/rooms/${roomNumber}/maintenance`,
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }
+  );
+}
+
+/** PATCH /api/tasks/{task_id}/resolve — Resolve maintenance task and restore room to GOOD */
+export async function resolveTask(taskId: string, resolutionNotes?: string): Promise<ApiTask> {
+  return apiFetch<ApiTask>(`/api/tasks/${taskId}/resolve`, {
+    method: "PATCH",
+    body: JSON.stringify({ resolution_notes: resolutionNotes || "Maintenance work completed." }),
+  });
+}
+
+// ─── GUEST & STAFF MESSAGING ──────────────────────────────────────────────
+
+/** GET /api/messages — Fetch conversation messages */
+export async function getStaffMessages(
+  guestId?: string,
+  reservationId?: string
+): Promise<ApiStaffMessage[]> {
+  const params = new URLSearchParams();
+  if (guestId) params.append("guest_id", guestId);
+  if (reservationId) params.append("reservation_id", reservationId);
+  const query = params.toString() ? `?${params.toString()}` : "";
+  return apiFetch<ApiStaffMessage[]>(`/api/messages${query}`);
+}
+
+/** POST /api/messages — Staff sends a message to a guest */
+export async function sendStaffMessage(
+  guestId: string,
+  content: string,
+  reservationId?: string
+): Promise<ApiStaffMessage> {
+  return apiFetch<ApiStaffMessage>("/api/messages", {
+    method: "POST",
+    body: JSON.stringify({ guest_id: guestId, content, reservation_id: reservationId }),
+  });
+}
+
+/** PATCH /api/messages/{id}/read — Mark message as read */
+export async function markStaffMessageRead(messageId: number | string): Promise<ApiStaffMessage> {
+  return apiFetch<ApiStaffMessage>(`/api/messages/${messageId}/read`, {
+    method: "PATCH",
+  });
 }
 
 // ─── CONVENIENCE ALIASES ───────────────────────────────────────────────────

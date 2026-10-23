@@ -46,7 +46,11 @@ function RoleSelection() {
 
   const pick = (id: RoleId) => {
     setSelectedRole(id);
-    void navigate({ to: "/login" });
+    if (id === "manager") {
+      void navigate({ to: "/admin/login" });
+    } else {
+      void navigate({ to: "/staff/login" });
+    }
   };
 
   return (
@@ -57,8 +61,24 @@ function RoleSelection() {
           <div className="mt-8 h-px w-24 gold-line" />
           <h1 className="mt-6 text-3xl font-bold sm:text-4xl lg:text-5xl">StayEase Staff Portal</h1>
           <p className="mt-3 max-w-md text-base text-muted-foreground">
-            Select your department to continue.
+            Select your department or access the executive console.
           </p>
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => void navigate({ to: "/staff/login" })}
+              className="px-4 py-2 rounded-xl bg-card border border-border text-xs font-bold text-foreground shadow-xs hover:border-primary/50"
+            >
+              Direct Staff Login (/staff/login)
+            </button>
+            <button
+              type="button"
+              onClick={() => void navigate({ to: "/admin/login" })}
+              className="px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/40 text-xs font-bold text-amber-500 hover:bg-amber-500/20"
+            >
+              Executive Admin (/admin/login)
+            </button>
+          </div>
         </header>
 
         <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -14,6 +14,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as PreRegisterRouteImport } from './routes/pre-register'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as GuestLoginRouteImport } from './routes/guest.login'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const RegisterRoute = RegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuestLoginRoute = GuestLoginRouteImport.update({
+  id: '/guest/login',
+  path: '/guest/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/pre-register': typeof PreRegisterRoute
   '/register': typeof RegisterRoute
+  '/guest/login': typeof GuestLoginRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/pre-register': typeof PreRegisterRoute
   '/register': typeof RegisterRoute
+  '/guest/login': typeof GuestLoginRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,25 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/pre-register': typeof PreRegisterRoute
   '/register': typeof RegisterRoute
+  '/guest/login': typeof GuestLoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/dashboard' | '/forgot-password' | '/pre-register' | '/register'
+    | '/'
+    | '/dashboard'
+    | '/forgot-password'
+    | '/pre-register'
+    | '/register'
+    | '/guest/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/forgot-password' | '/pre-register' | '/register'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/forgot-password'
+    | '/pre-register'
+    | '/register'
+    | '/guest/login'
   id:
     | '__root__'
     | '/'
@@ -76,6 +96,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/pre-register'
     | '/register'
+    | '/guest/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -84,6 +105,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   PreRegisterRoute: typeof PreRegisterRoute
   RegisterRoute: typeof RegisterRoute
+  GuestLoginRoute: typeof GuestLoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -123,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/guest/login': {
+      id: '/guest/login'
+      path: '/guest/login'
+      fullPath: '/guest/login'
+      preLoaderRoute: typeof GuestLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -132,6 +161,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   PreRegisterRoute: PreRegisterRoute,
   RegisterRoute: RegisterRoute,
+  GuestLoginRoute: GuestLoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

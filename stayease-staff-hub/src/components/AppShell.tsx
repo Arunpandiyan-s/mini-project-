@@ -17,6 +17,7 @@ import {
   Lock,
   Building,
   Megaphone,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -71,6 +72,7 @@ type NavItem = {
 
 const NAV: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/admin/dashboard", label: "Executive Admin", icon: ShieldCheck, managerOnly: true },
   { to: "/dashboard/rooms", label: "Rooms", icon: DoorClosed, hideRoles: ["housekeeping", "fnb"] },
   { to: "/dashboard/staff", label: "Staff", icon: Users, managerOnly: true },
   { to: "/dashboard/requests", label: "Requests", icon: Inbox, hideRoles: ["housekeeping"] },

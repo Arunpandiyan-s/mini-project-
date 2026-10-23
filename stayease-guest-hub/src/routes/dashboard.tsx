@@ -14,9 +14,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Loader2, Lock, Sparkles } from "lucide-react";
+import { ArrowLeft, Loader2, Lock, Sparkles, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { AiConciergeChat } from "@/components/hotel/AiConciergeChat";
+import { ReceptionChatModal } from "@/components/hotel/ReceptionChatModal";
 import { BottomNav, type NavKey } from "@/components/hotel/BottomNav";
 import { ContactsCard } from "@/components/hotel/ContactsCard";
 import { DashboardHeader } from "@/components/hotel/DashboardHeader";
@@ -93,6 +94,7 @@ function Dashboard() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [aiChatOpen, setAiChatOpen] = useState(false);
+  const [receptionChatOpen, setReceptionChatOpen] = useState(false);
   const [nav, setNav] = useState<NavKey>("home");
   const [loading, setLoading] = useState(true);
 
@@ -402,13 +404,30 @@ function Dashboard() {
         </div>
       </main>
 
-      <button
-        type="button"
-        onClick={() => setAiChatOpen(true)}
-        className="fixed bottom-24 right-5 lg:bottom-8 lg:right-8 z-40 inline-flex items-center gap-2 rounded-full gradient-gold px-5 py-3 text-sm font-semibold text-gold-foreground shadow-[var(--shadow-card)] active:scale-95 transition"
-      >
-        <Sparkles className="h-5 w-5 animate-pulse" /> AI Concierge
-      </button>
+      {/* Floating Action Buttons: AI Concierge & Front Desk Reception */}
+      <div className="fixed bottom-24 right-4 lg:bottom-8 lg:right-8 z-40 flex flex-col items-end gap-2.5">
+        <button
+          type="button"
+          onClick={() => setReceptionChatOpen(true)}
+          className="inline-flex items-center gap-2 rounded-full bg-card border border-border px-4 py-2.5 text-xs font-bold text-foreground shadow-lg hover:bg-muted active:scale-95 transition"
+        >
+          <MessageSquare className="h-4 w-4 text-primary" /> Front Desk Chat
+        </button>
+        <button
+          type="button"
+          onClick={() => setAiChatOpen(true)}
+          className="inline-flex items-center gap-2 rounded-full gradient-gold px-4 py-2.5 text-xs font-bold text-gold-foreground shadow-lg active:scale-95 transition"
+        >
+          <Sparkles className="h-4 w-4 animate-pulse" /> AI Concierge
+        </button>
+      </div>
+
+      <ReceptionChatModal
+        open={receptionChatOpen}
+        onOpenChange={setReceptionChatOpen}
+        reservationId={stay?.reservation_id}
+        guestName={guest?.name}
+      />
 
       <AiConciergeChat open={aiChatOpen} onOpenChange={setAiChatOpen} />
 

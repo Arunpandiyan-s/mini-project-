@@ -19,6 +19,9 @@ import type {
   GuestRequestCreatePayload,
   ApiGuestBooking,
   ApiDiscoveryRoom,
+  ApiGuestMessage,
+  GuestPreRegisterPayload,
+  GuestPreRegisterResponse,
   ApiError,
 } from "./types";
 
@@ -266,6 +269,56 @@ export async function markGuestNotificationRead(notificationId: string): Promise
 /** PATCH /api/guest/me/notifications/read-all */
 export async function markAllGuestNotificationsRead(): Promise<void> {
   return guestFetch<void>("/api/guest/me/notifications/read-all", { method: "PATCH" });
+}
+
+// ─── DIGITAL PRE-REGISTRATION ─────────────────────────────────────────────
+
+/** POST /api/guest/pre-register — Complete digital pre-registration for a reservation */
+export async function preRegisterStay(payload: GuestPreRegisterPayload): Promise<GuestPreRegisterResponse> {
+  const url = `${API_BASE}/api/guest/pre-register`;
+  const token = getGuestToken();
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    let errorMsg = `Pre-registration failed (${res.status})`;
+    try {
+      const data = await res.json();
+      if (data.detail) errorMsg = typeof data.detail === "string" ? data.detail : JSON.stringify(data.detail);
+    } catch { }
+    throw new Error(errorMsg);
+  }
+
+  return res.json();
+}
+
+// ─── GUEST & RECEPTION MESSAGING ──────────────────────────────────────────
+
+/** GET /api/messages — Fetch conversation messages */
+export async function getGuestMessages(reservationId?: string): Promise<ApiGuestMessage[]> {
+  const query = reservationId ? `?reservation_id=${encodeURIComponent(reservationId)}` : "";
+  return guestFetch<ApiGuestMessage[]>(`/api/messages${query}`);
+}
+
+/** POST /api/messages — Send a message to reception */
+export async function sendGuestMessage(content: string, reservationId?: string): Promise<ApiGuestMessage> {
+  return guestFetch<ApiGuestMessage>("/api/messages", {
+    method: "POST",
+    body: JSON.stringify({ content, reservation_id: reservationId }),
+  });
+}
+
+/** PATCH /api/messages/{id}/read — Mark message as read */
+export async function markGuestMessageRead(messageId: number | string): Promise<ApiGuestMessage> {
+  return guestFetch<ApiGuestMessage>(`/api/messages/${messageId}/read`, {
+    method: "PATCH",
+  });
 }
 
 // ─── AI CONCIERGE (isolated — chat-only, no operational side effects) ─────

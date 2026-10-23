@@ -259,7 +259,12 @@ export function TaskCard({ task }: { task: Task }) {
   const submitCompletionReport = async () => {
     stopRepeatingAlarm(); // Stop continuous alarm ring sound!
     try {
-      const { acceptTask: apiAcceptTask, startTask: apiStartTask, completeTask: apiCompleteTask } = await import("@/lib/api");
+      const {
+        acceptTask: apiAcceptTask,
+        startTask: apiStartTask,
+        completeTask: apiCompleteTask,
+        resolveTask: apiResolveTask,
+      } = await import("@/lib/api");
       const s = (task.status || "").toString().toLowerCase();
       if (s === "pending" || s === "assigned" || s === "open") {
         await apiAcceptTask(task.id).catch(() => {});
@@ -267,7 +272,11 @@ export function TaskCard({ task }: { task: Task }) {
       } else if (s === "accepted") {
         await apiStartTask(task.id).catch(() => {});
       }
-      await apiCompleteTask(task.id);
+      if (task.role === "maintenance" || (task.type || "").toLowerCase().includes("maint")) {
+        await apiResolveTask(task.id).catch(() => apiCompleteTask(task.id));
+      } else {
+        await apiCompleteTask(task.id);
+      }
     } catch {
       // fallback local update
     }

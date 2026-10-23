@@ -313,6 +313,13 @@ export function FloorWiseRoomGrid() {
     setRoomStatus(roomNum, "Maintenance");
     toast.warning(`Room ${roomNum} reported for maintenance.`);
     pushActivity(`Room ${roomNum} placed under maintenance.`);
+    import("@/lib/api").then(({ reportRoomMaintenance }) => {
+      void reportRoomMaintenance(roomNum, {
+        issue_description: "Reported defect requiring maintenance attention",
+        priority: "high",
+        block_occupancy: true,
+      }).catch(() => {});
+    });
     void triggerN8nWebhook("room_status_changed", { roomNumber: roomNum, status: "Maintenance" });
   };
 

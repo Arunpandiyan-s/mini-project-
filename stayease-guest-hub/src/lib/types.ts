@@ -202,3 +202,37 @@ function formatCreatedAt(isoString: string): string {
     return isoString;
   }
 }
+
+// ─── MESSAGING & PRE-REGISTRATION ──────────────────────────────────────────
+
+export interface ApiGuestMessage {
+  id: number;
+  message_id: string;
+  guest_id: string;
+  reservation_id?: string | null;
+  sender_type: "guest" | "staff";
+  sender_id: string;
+  sender_name: string;
+  content: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface GuestPreRegisterPayload {
+  reservation_id: string;
+  estimated_arrival?: string;
+  id_document_number?: string;
+  special_requests?: string;
+  emergency_contact?: string;
+}
+
+export interface GuestPreRegisterResponse {
+  status: string;
+  message: string;
+  reservation_id: string;
+  room_number: string;
+  room_type: string;
+  check_in: string;
+  check_out: string;
+  guest_name: string;
+}

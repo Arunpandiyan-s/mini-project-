@@ -202,11 +202,17 @@ function WelcomeScreen() {
             </Button>
           </form>
 
-          <div className="mt-5 text-center text-xs text-muted-foreground leading-relaxed space-y-1">
+          <div className="mt-5 text-center text-xs text-muted-foreground leading-relaxed space-y-1.5">
             <p>
               Don't have an account?{" "}
               <a href="/register" className="text-primary font-semibold hover:underline">
                 Create Account
+              </a>
+            </p>
+            <p>
+              Arriving soon?{" "}
+              <a href="/pre-register" className="text-primary font-semibold hover:underline">
+                Digital Pre-Registration
               </a>
             </p>
             <p className="text-[11px] opacity-75">

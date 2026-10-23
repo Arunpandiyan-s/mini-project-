@@ -218,3 +218,45 @@ export interface ApiError {
   message: string;
   detail?: string | unknown;
 }
+
+// ─── ADMIN DASHBOARD STATS & MESSAGING ─────────────────────────────────────
+
+export interface AdminDashboardStats {
+  rooms: {
+    total: number;
+    available: number;
+    occupied: number;
+    dirty: number;
+    awaiting_inspection: number;
+    maintenance: number;
+  };
+  reservations: {
+    active: number;
+    arrivals_today: number;
+    departures_today: number;
+  };
+  tasks: {
+    total: number;
+    pending: number;
+    in_progress: number;
+    completed: number;
+  };
+  staff: {
+    total: number;
+    on_duty: number;
+    departments: Record<string, number>;
+  };
+}
+
+export interface ApiStaffMessage {
+  id: number;
+  message_id: string;
+  guest_id: string;
+  reservation_id?: string | null;
+  sender_type: "guest" | "staff";
+  sender_id: string;
+  sender_name: string;
+  content: string;
+  is_read: boolean;
+  created_at: string;
+}
