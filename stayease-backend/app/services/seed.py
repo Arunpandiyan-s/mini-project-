@@ -5,6 +5,7 @@ from app.models.staff import Staff
 from app.models.room import Room
 from app.models.guest import Guest
 from app.models.reservation import Reservation
+from app.models.hotel_management import HotelManagement
 from app.models.enums import (
     StaffRole, DutyStatus, EmploymentStatus, AvailabilityStatus,
     OccupancyStatus, CleaningStatus, MaintenanceStatus, ReservationStatus
@@ -43,6 +44,37 @@ def seed_development_data(db: Session):
         print("[Seed] Idempotent developer admin seed completed successfully.")
     else:
         print("[Seed] Database already has seeded admin. Skipping.")
+
+    # 1b. Seed Departmental Staff (Reception, Housekeeping, Maintenance, F&B)
+    is_pytest = "PYTEST_CURRENT_TEST" in os.environ
+    if not is_pytest:
+        dept_staff_seeds = [
+            ("EMP-1002", "Sarah Miller", "sarah.m@stayease.com", StaffRole.RECEPTION, "Floor 1", "08:00 - 16:00"),
+            ("EMP-1003", "Elena Rostova", "elena.r@stayease.com", StaffRole.HOUSEKEEPING, "Floor 2", "07:00 - 15:00"),
+            ("EMP-1004", "Marcus Torres", "marcus.t@stayease.com", StaffRole.MAINTENANCE, "All Floors", "09:00 - 17:00"),
+            ("EMP-1005", "Carlos Mendez", "fnb.staff@stayease.com", StaffRole.FNB, "Floor 1", "06:00 - 14:00"),
+        ]
+        raw_staff_pwd = settings.DEV_ADMIN_PASSWORD
+        hashed_staff_pwd = hash_password(raw_staff_pwd)
+
+        for sid, sname, semail, srole, sfloor, sshift in dept_staff_seeds:
+            existing = db.query(Staff).filter((Staff.staff_id == sid) | (Staff.email == semail)).first()
+            if not existing:
+                new_staff = Staff(
+                    staff_id=sid,
+                    name=sname,
+                    email=semail,
+                    phone="+91 98110 00000",
+                    password_hash=hashed_staff_pwd,
+                    role=srole,
+                    floor=sfloor,
+                    shift=sshift,
+                    duty_status=DutyStatus.ON_DUTY,
+                    employment_status=EmploymentStatus.ACTIVE,
+                    availability_status=AvailabilityStatus.AVAILABLE
+                )
+                db.add(new_staff)
+        db.commit()
 
     # 2. Seed Rooms (60 rooms across 5 floors, matching stayease-staff-hub/src/lib/data.ts)
     existing_rooms_count = db.query(Room).count()
@@ -150,4 +182,23 @@ def seed_development_data(db: Session):
             print("[Seed] No available rooms to seed stay.")
     else:
         print("[Seed] Developer guest already has active stay. Skipping.")
+
+    # 4. Seed Hotel Management entity
+    existing_hotel = db.query(HotelManagement).first()
+    if not existing_hotel:
+        hotel = HotelManagement(
+            hotel_name="StayEase Smart Hotel & Suites",
+            hotel_code="STAYEASE-MAIN",
+            branch_location="Central Metropolitan",
+            total_rooms=60,
+            contact_email="operations@stayease.com",
+            contact_phone="+91 98110 00000",
+            status="active",
+            description="Automated hospitality operations & guest service platform."
+        )
+        db.add(hotel)
+        db.commit()
+        print("[Seed] Idempotent hotel management record seed completed successfully.")
+    else:
+        print("[Seed] Hotel management record already seeded. Skipping.")
 

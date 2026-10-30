@@ -24,6 +24,7 @@ from app.models.assignment_rotation import AssignmentRotation
 from app.models.notification import Notification
 from app.models.guest_notification import GuestNotification
 from app.models.message import Message
+from app.models.hotel_management import HotelManagement
 
 __all__ = [
     "StaffRole",
@@ -49,5 +50,6 @@ __all__ = [
     "AssignmentRotation",
     "Notification",
     "GuestNotification",
-    "Message"
+    "Message",
+    "HotelManagement"
 ]

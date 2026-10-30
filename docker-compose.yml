@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # 1. StayEase FastAPI Backend
+  backend:
+    build:
+      context: ./stayease-backend
+      dockerfile: Dockerfile
+    container_name: stayease-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - DATABASE_URL=sqlite:///./stayease.db
+      - SECRET_KEY=stayease_production_super_secret_jwt_key_9941
+      - CORS_ORIGINS=["http://localhost:5173","http://127.0.0.1:5173","http://localhost:80","http://localhost:3000"]
+    volumes:
+      - backend-data:/app/data
+    restart: unless-stopped
+
+  # 2. StayEase Unified Single Frontend (Guest + Staff + Admin)
+  frontend:
+    build:
+      context: ./stayease-frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=http://localhost:8000
+        - VITE_WS_BASE_URL=ws://localhost:8000
+    container_name: stayease-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend-data:

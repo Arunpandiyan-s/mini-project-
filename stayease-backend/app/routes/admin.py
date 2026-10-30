@@ -89,9 +89,45 @@ def get_admin_dashboard_stats(
     maintenance_count = db.query(Staff).filter(Staff.role == StaffRole.MAINTENANCE).count()
     fnb_count = db.query(Staff).filter(Staff.role == StaffRole.FNB).count()
 
+    total_tasks = db.query(Task).count()
+    pending_tasks = db.query(Task).filter(Task.status.in_([TaskStatus.PENDING, TaskStatus.ASSIGNED])).count()
+    in_progress_tasks = db.query(Task).filter(Task.status.in_([TaskStatus.ACCEPTED, TaskStatus.IN_PROGRESS])).count()
+    completed_tasks = db.query(Task).filter(Task.status == TaskStatus.COMPLETED).count()
+
     return {
         "status": "success",
         "timestamp": datetime.now(timezone.utc).isoformat(),
+        # Nested format expected by AdminDashboardStats frontend TypeScript interface
+        "rooms": {
+            "total": total_rooms,
+            "available": available_rooms,
+            "occupied": occupied_rooms,
+            "dirty": rooms_requiring_cleaning,
+            "awaiting_inspection": rooms_awaiting_inspection,
+            "maintenance": rooms_under_maintenance,
+        },
+        "reservations": {
+            "active": active_reservations,
+            "arrivals_today": today_arrivals,
+            "departures_today": today_departures,
+        },
+        "tasks": {
+            "total": total_tasks,
+            "pending": pending_tasks,
+            "in_progress": in_progress_tasks,
+            "completed": completed_tasks,
+        },
+        "staff": {
+            "total": total_staff,
+            "on_duty": on_duty_staff,
+            "departments": {
+                "reception": reception_count,
+                "housekeeping": housekeeping_count,
+                "maintenance": maintenance_count,
+                "fnb": fnb_count,
+            },
+        },
+        # Legacy flat keys
         "total_rooms": total_rooms,
         "available_rooms": available_rooms,
         "occupied_rooms": occupied_rooms,

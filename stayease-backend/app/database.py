@@ -6,6 +6,10 @@ engine_args = {}
 if settings.DATABASE_URL.startswith("sqlite"):
     # check_same_thread is only needed for SQLite
     engine_args["connect_args"] = {"check_same_thread": False}
+else:
+    # Recommended settings for cloud Postgres (Aiven/Supabase/Neon) connection stability
+    engine_args["pool_pre_ping"] = True
+    engine_args["pool_recycle"] = 300
 
 engine = create_engine(settings.DATABASE_URL, **engine_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -7,7 +7,8 @@ from datetime import datetime, timezone
 import uuid
 
 from app.database import get_db
-from app.core.dependencies import get_current_guest
+from app.core.dependencies import get_current_guest, guest_oauth2_scheme
+from app.core.security import decode_access_token
 from app.models.guest import Guest
 from app.models.reservation import Reservation
 from app.models.room import Room
@@ -555,11 +556,25 @@ class GuestPreRegisterPayload(BaseModel):
     special_requests: Optional[str] = None
     emergency_contact: Optional[str] = None
 
+def get_optional_guest(
+    token: Optional[str] = Depends(guest_oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> Optional[Guest]:
+    if not token:
+        return None
+    payload = decode_access_token(token)
+    if not payload or payload.get("principal_type") != "guest":
+        return None
+    sub = payload.get("sub")
+    if not sub:
+        return None
+    return db.query(Guest).filter(Guest.guest_id == sub).first()
+
 @router.post("/pre-register")
 def pre_register_stay(
     payload: GuestPreRegisterPayload,
     db: Session = Depends(get_db),
-    current_guest: Optional[Guest] = Depends(get_current_guest)
+    current_guest: Optional[Guest] = Depends(get_optional_guest)
 ):
     """
     Complete digital pre-registration for a stay.

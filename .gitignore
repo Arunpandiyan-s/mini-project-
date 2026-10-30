@@ -21,8 +21,14 @@ venv/
 # Databases & local environment
 stayease.db
 *.db-journal
+.env
+**/.env
 .env.local
 *.log
+
+# Deployment-generated files
+.vercel/
+**/.vercel/
 
 # IDE & OS
 .vscode/
