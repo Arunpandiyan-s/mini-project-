@@ -40,11 +40,11 @@ export function StatCard({
   onClick?: () => void;
 }) {
   const tones = {
-    primary: "bg-primary-soft text-accent-foreground",
-    gold: "bg-gold-soft text-gold-foreground",
-    success: "bg-success/15 text-success",
-    danger: "bg-destructive/12 text-destructive",
-    muted: "bg-muted text-muted-foreground",
+    primary: "bg-primary/10 text-primary border-primary/20",
+    gold: "bg-gold-soft text-gold-foreground border-amber-500/20",
+    success: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/25",
+    danger: "bg-destructive/10 text-destructive border-destructive/25",
+    muted: "bg-muted text-muted-foreground border-border",
   };
   return (
     <div
@@ -52,27 +52,27 @@ export function StatCard({
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       className={cn(
-        "surface p-4 sm:p-5 transition-all select-none",
+        "surface p-4 sm:p-5 transition-all select-none border border-border/80 shadow-xs",
         onClick && "cursor-pointer hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98]",
         className
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <p className="min-w-0 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <p className="min-w-0 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
         </p>
         {Icon && (
-          <span className={cn("grid size-9 shrink-0 place-items-center rounded-xl", tones[tone])}>
+          <span className={cn("grid size-9 shrink-0 place-items-center rounded-lg border", tones[tone])}>
             <Icon className="size-4" />
           </span>
         )}
       </div>
-      <p className="mt-3 font-display text-2xl font-bold sm:text-3xl">{value}</p>
+      <p className="mt-3 font-display text-2xl font-bold tracking-tight tabular-nums sm:text-3xl text-foreground">{value}</p>
       {trend && (
         <p
           className={cn(
-            "mt-1.5 inline-flex items-center gap-1 text-xs font-semibold",
-            trend.up ? "text-success" : "text-destructive",
+            "mt-1.5 inline-flex items-center gap-1 text-xs font-semibold tabular-nums",
+            trend.up ? "text-emerald-600 dark:text-emerald-400" : "text-destructive",
           )}
         >
           {trend.up ? <TrendingUp className="size-3.5" /> : <TrendingDown className="size-3.5" />}

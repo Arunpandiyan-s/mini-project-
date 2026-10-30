@@ -163,13 +163,29 @@ export function RequestLogsPanel() {
   const getStatusBadge = (status: RequestLogItem["status"]) => {
     switch (status) {
       case "In Progress":
-        return <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-sky-500/15 text-sky-600 border border-sky-500/30">In Progress</span>;
+        return (
+          <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/25 inline-flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-sky-500" /> In Progress
+          </span>
+        );
       case "Completed":
-        return <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">Completed</span>;
+        return (
+          <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25 inline-flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-emerald-500" /> Completed
+          </span>
+        );
       case "Pending":
-        return <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-600 border border-amber-500/30">Pending</span>;
+        return (
+          <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/25 inline-flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-amber-500" /> Pending
+          </span>
+        );
       case "Attention Needed":
-        return <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/15 text-rose-600 border border-rose-500/30">Attention Needed</span>;
+        return (
+          <span className="px-2 py-0.5 rounded-md text-xs font-semibold bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/25 inline-flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-rose-500" /> Attention Needed
+          </span>
+        );
     }
   };
 
@@ -228,18 +244,18 @@ export function RequestLogsPanel() {
           filteredLogs.map((log) => (
             <div
               key={log.id}
-              className="rounded-2xl border border-border/80 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-xs space-y-2.5"
+              className="rounded-xl border border-border/80 bg-card p-4 transition-all hover:border-primary/40 hover:shadow-xs space-y-2.5"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 {/* Room # & Category */}
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <span className="grid size-9 place-items-center rounded-xl bg-primary-soft text-accent-foreground font-bold text-xs shrink-0">
+                  <span className="grid size-9 place-items-center rounded-lg bg-primary/10 border border-primary/20 text-primary font-mono font-bold text-xs shrink-0 tracking-tight">
                     {log.room}
                   </span>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-display font-extrabold text-foreground text-sm">Room {log.room}</span>
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-muted-foreground">
+                      <span className="font-mono font-bold text-foreground text-sm tracking-tight">ROOM {log.room}</span>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
                         {getCategoryIcon(log.category)} {log.category}
                       </span>
                     </div>
@@ -257,11 +273,11 @@ export function RequestLogsPanel() {
 
               {/* Bottom Meta Bar: Assigned Staff Member & Timestamp */}
               <div className="pt-2 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1.5 font-bold text-foreground">
+                <span className="inline-flex items-center gap-1.5 font-medium text-foreground">
                   <User className="size-3.5 text-primary shrink-0" />
-                  Assigned Staff: <span className="text-primary">{log.assignedStaff}</span>
+                  Assigned Staff: <span className="font-semibold text-primary">{log.assignedStaff}</span>
                 </span>
-                <span className="inline-flex items-center gap-1 text-muted-foreground font-semibold">
+                <span className="inline-flex items-center gap-1 text-muted-foreground font-mono text-xs tabular-nums">
                   <Clock className="size-3.5 shrink-0" /> {log.time}
                 </span>
               </div>

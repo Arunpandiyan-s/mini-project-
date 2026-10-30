@@ -11,7 +11,7 @@ import { apiForgotPassword } from "@/lib/api";
 export const Route = createFileRoute("/guest/forgot-password")({
   head: () => ({
     meta: [
-      { title: "Forgot Password — StayEase Guest Portal" },
+      { title: "Forgot Password: StayEase Guest Portal" },
       {
         name: "description",
         content: "Reset your StayEase Guest Portal password.",

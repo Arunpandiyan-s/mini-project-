@@ -62,7 +62,7 @@ export function FoodSection({ onRequestCreated, selectedRoomNumber }: FoodSectio
         room_number: selectedRoomNumber || undefined,
       });
       onRequestCreated(result.request_id, orderLabel, "food_order");
-      toast.success(`Order placed! ${count} item${count === 1 ? "" : "s"} — we'll bring it to your room.`);
+      toast.success(`Order placed! ${count} item${count === 1 ? "" : "s"}. We'll bring it to your room.`);
     } catch (err: unknown) {
       const apiErr = err as { message?: string };
       toast.error(apiErr?.message ?? "Failed to place order. Please try again.");
@@ -197,7 +197,7 @@ export function FoodSection({ onRequestCreated, selectedRoomNumber }: FoodSectio
           </SheetHeader>
           {cart.length === 0 ? (
             <p className="mt-4 text-sm text-muted-foreground">
-              Your cart is empty — add something from the menu.
+              Your cart is empty. Add something delicious from the menu.
             </p>
           ) : (
             <div className="mt-4 space-y-3">

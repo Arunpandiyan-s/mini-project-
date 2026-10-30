@@ -703,7 +703,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           }
         }).catch((err: { status?: number; message?: string }) => {
           if (err?.status === 409) {
-            toast.error(err.message || "Cannot go off duty — you have active tasks assigned.");
+            toast.error(err.message || "Cannot go off duty: you have active tasks assigned.");
           } else {
             toast.error("Failed to update duty status. Please try again.");
           }

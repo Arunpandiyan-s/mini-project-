@@ -6,7 +6,7 @@ import { apiGuestRegister, setGuestToken } from "../lib/api";
 export const Route = createFileRoute("/guest/register")({
   head: () => ({
     meta: [
-      { title: "Guest Registration — StayEase" },
+      { title: "Guest Registration: StayEase" },
       { name: "description", content: "Create a StayEase guest account to book room stays and access hotel services." },
     ],
   }),

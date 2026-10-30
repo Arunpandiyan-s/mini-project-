@@ -1,3 +1,5 @@
+import os
+import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
@@ -11,18 +13,19 @@ from app.routes import (
     admin, message
 )
 
-# Automatically create all tables on startup (Phase 1 simplicity)
-Base.metadata.create_all(bind=engine)
+is_pytest = "PYTEST_CURRENT_TEST" in os.environ or any("pytest" in arg for arg in sys.argv)
 
-# Run schema migrations (idempotent alterations)
-run_safe_schema_migrations()
+def init_db():
+    Base.metadata.create_all(bind=engine)
+    run_safe_schema_migrations()
+    db = SessionLocal()
+    try:
+        seed_development_data(db)
+    finally:
+        db.close()
 
-# Seed developer admin and rooms on startup
-db = SessionLocal()
-try:
-    seed_development_data(db)
-finally:
-    db.close()
+if not is_pytest:
+    init_db()
 
 app = FastAPI(
     title="StayEase Hotel Management Platform Backend",

@@ -26,28 +26,28 @@ export function DashboardHeader({
   onOpenSettings,
 }: Props) {
   const guestName = guest?.name ?? "Guest";
-  const roomNumber = stay?.room.room_number ?? "—";
-  const roomType = stay?.room.room_type ?? "";
-  const checkIn = stay ? formatDate(stay.check_in) : "—";
-  const checkOut = stay ? formatDate(stay.check_out) : "—";
+  const roomNumber = stay?.room.room_number ?? "Unassigned";
+  const roomType = stay?.room.room_type ?? "Standard Suite";
+  const checkIn = stay ? formatDate(stay.check_in) : "Pending";
+  const checkOut = stay ? formatDate(stay.check_out) : "Pending";
 
   return (
-    <header className="gradient-primary rounded-b-[2rem] px-5 lg:px-8 pt-6 pb-8 lg:pt-8 lg:pb-10 text-primary-foreground">
+    <header className="rounded-2xl border border-border bg-card p-5 lg:p-6 shadow-soft text-foreground">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3.5">
           <img
             src={avatar}
             alt={`${guestName} profile photo`}
             width={512}
             height={512}
             loading="lazy"
-            className="h-12 w-12 shrink-0 rounded-2xl object-cover ring-2 ring-gold/70"
+            className="size-12 shrink-0 rounded-xl object-cover ring-1 ring-border shadow-2xs"
           />
-          <div className="min-w-0">
-            <p className="text-xs uppercase tracking-[0.18em] text-primary-foreground/70">
-              Welcome back
+          <div className="min-w-0 space-y-0.5">
+            <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">
+              Guest Resident
             </p>
-            <h1 className="truncate text-lg font-semibold">{guestName}</h1>
+            <h1 className="truncate text-lg font-bold text-foreground">{guestName}</h1>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-2">
@@ -55,11 +55,11 @@ export function DashboardHeader({
             type="button"
             onClick={onOpenNotifications}
             aria-label="Open notifications"
-            className="relative grid h-11 w-11 place-items-center rounded-2xl bg-primary-foreground/12 transition hover:bg-primary-foreground/20"
+            className="relative grid size-9 place-items-center rounded-lg border border-border bg-background hover:bg-accent text-foreground transition-colors"
           >
-            <Bell className="h-5 w-5" />
+            <Bell className="size-4" />
             {unreadCount > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 grid h-5 w-5 place-items-center rounded-full bg-gold text-[11px] font-bold text-gold-foreground">
+              <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
                 {unreadCount}
               </span>
             )}
@@ -68,34 +68,37 @@ export function DashboardHeader({
             type="button"
             onClick={onOpenSettings}
             aria-label="Open profile and settings"
-            className="grid h-11 w-11 place-items-center rounded-2xl bg-primary-foreground/12 transition hover:bg-primary-foreground/20"
+            className="grid size-9 place-items-center rounded-lg border border-border bg-background hover:bg-accent text-foreground transition-colors"
           >
-            <Settings className="h-5 w-5" />
+            <Settings className="size-4" />
           </button>
         </div>
       </div>
 
-      <div className="mt-5 rounded-[1.25rem] bg-primary-foreground/12 p-4 backdrop-blur">
+      {/* Luxury Digital Room Key Card */}
+      <div className="mt-4 rounded-xl border border-border/80 bg-background/80 p-4 shadow-2xs">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-primary-foreground/70">Room</p>
-            <p className="text-2xl font-semibold leading-tight">{roomNumber}</p>
-            <p className="text-xs text-primary-foreground/80">{roomType}</p>
+            <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Active Room</p>
+            <p className="font-mono text-2xl font-extrabold text-foreground leading-tight mt-0.5 tabular-nums">
+              {roomNumber}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">{roomType}</p>
           </div>
-          <div className="text-right">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-gold px-3 py-1 text-xs font-semibold text-gold-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-gold-foreground" />
-              {stay ? "Checked In" : "—"}
+          <div className="text-right space-y-1">
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              {stay ? "Checked In" : "Pre-Registered"}
             </span>
-            <p className="mt-2 text-xs text-primary-foreground/80">
+            <p className="text-[11px] font-mono text-muted-foreground tabular-nums">
               {activeRequests} active request{activeRequests === 1 ? "" : "s"}
             </p>
           </div>
         </div>
-        <div className="mt-3 flex items-center gap-2 border-t border-primary-foreground/15 pt-3 text-xs text-primary-foreground/85">
-          <CalendarDays className="h-4 w-4 shrink-0" />
-          <span className="truncate">
-            {checkIn} → {checkOut}
+        <div className="mt-3 flex items-center gap-2 border-t border-border/60 pt-3 text-xs font-mono text-muted-foreground">
+          <CalendarDays className="size-3.5 shrink-0 text-primary" />
+          <span className="truncate tabular-nums">
+            {checkIn} to {checkOut}
           </span>
         </div>
       </div>

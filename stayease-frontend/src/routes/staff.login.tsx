@@ -26,7 +26,7 @@ import type { RoleId } from "@/lib/data";
 export const Route = createFileRoute("/staff/login")({
   head: () => ({
     meta: [
-      { title: "Staff Login — StayEase Staff Portal" },
+      { title: "Staff Login: StayEase Staff Portal" },
       {
         name: "description",
         content: "Secure staff sign-in for StayEase hotel operations across all departments.",

@@ -341,10 +341,10 @@ export function RoomGrid({ floorFilter }: { floorFilter?: number }) {
           {(!active || !isReception || (active.status !== "Occupied" && active.status !== "Reserved")) && active && (
             <dl className="grid grid-cols-2 gap-3 text-sm pt-2">
               <Detail label="Status" value={active.status} />
-              <Detail label="Guest" value={active.guest ?? "—"} />
-              <Detail label="Cleaning" value={active.cleaningType ?? "Not scheduled"} />
-              <Detail label="Priority" value={active.priority ?? "—"} />
-              <Detail label="Assigned" value={active.assignedAt ?? "—"} />
+              <Detail label="Guest" value={active.guest || "None"} />
+              <Detail label="Cleaning" value={active.cleaningType || "Not scheduled"} />
+              <Detail label="Priority" value={active.priority || "Standard"} />
+              <Detail label="Assigned" value={active.assignedAt || "Unassigned"} />
               <Detail label="Room type" value={active.type} />
             </dl>
           )}

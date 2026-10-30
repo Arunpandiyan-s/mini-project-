@@ -57,13 +57,13 @@ import { mapApiGuestRequestToUi } from "@/lib/types";
 export const Route = createFileRoute("/guest/dashboard")({
   head: () => ({
     meta: [
-      { title: "Guest Dashboard — StayEase Guest Portal" },
+      { title: "Guest Dashboard: StayEase Guest Portal" },
       {
         name: "description",
         content:
           "Your StayEase dashboard: request housekeeping, order food, view room info and contact hotel staff in a few taps.",
       },
-      { property: "og:title", content: "Guest Dashboard — StayEase Guest Portal" },
+      { property: "og:title", content: "Guest Dashboard: StayEase Guest Portal" },
       {
         property: "og:description",
         content: "Requests, dining, room details and hotel contacts in one place.",

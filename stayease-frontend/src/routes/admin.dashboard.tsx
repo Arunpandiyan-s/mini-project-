@@ -45,7 +45,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/admin/dashboard")({
   head: () => ({
     meta: [
-      { title: "Admin Console — StayEase Executive Dashboard" },
+      { title: "Admin Console: StayEase Executive Dashboard" },
       {
         name: "description",
         content: "StayEase Executive & Administrative Control Cockpit.",
@@ -203,26 +203,29 @@ function AdminDashboardPage() {
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 py-6 space-y-6">
         {/* Welcome & Quick Action Bar */}
-        <div className="p-6 rounded-3xl bg-gradient-to-r from-amber-500/15 via-primary/10 to-card border border-amber-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-black text-foreground">
-              Welcome to the Executive Operations Console
+        <div className="p-6 rounded-2xl bg-card border border-border shadow-soft flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/25 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+              <ShieldCheck className="size-3.5" /> Executive Operations Cockpit
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+              Hotel Operational Inventory & Telemetry
             </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xl">
-              Real-time room availability, housekeeping turnover, active check-in lifecycle, and automated dispatch control.
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-xl leading-relaxed">
+              Global room occupancy, turnover dispatch, guest flow synchronization, and audit logging.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
             <Button
               onClick={() => setInspectModalOpen(true)}
-              className="rounded-xl h-10 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-sm"
+              className="rounded-lg h-9 text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-2xs"
             >
-              <Sparkles className="size-3.5 mr-1.5" /> Room Inspection
+              <Sparkles className="size-3.5 mr-1.5" /> Inspect Room Quality
             </Button>
             <Button
               onClick={() => setMaintModalOpen(true)}
               variant="outline"
-              className="rounded-xl h-10 text-xs font-bold border-orange-500/40 text-orange-600 dark:text-orange-400 hover:bg-orange-500/10"
+              className="rounded-lg h-9 text-xs font-semibold border-orange-500/30 text-orange-700 dark:text-orange-400 hover:bg-orange-500/10"
             >
               <Wrench className="size-3.5 mr-1.5" /> Maintenance Block
             </Button>
@@ -232,91 +235,91 @@ function AdminDashboardPage() {
         {/* 1. ROOM LIFECYCLE TELEMETRY */}
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-              <BedDouble className="size-4 text-primary" /> Room Operational Inventory & Readiness
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+              <BedDouble className="size-3.5 text-primary" /> Room Operational Status
             </h2>
-            <Link to="/dashboard/rooms" className="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+            <Link to="/dashboard/rooms" className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
               Floor Matrix <ArrowRight className="size-3" />
             </Link>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            <div className="card-surface p-4 rounded-2xl border border-border">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Total Inventory</span>
-              <p className="text-2xl sm:text-3xl font-black text-foreground mt-1 tabular-nums">{stats?.rooms.total ?? "—"}</p>
+            <div className="p-4 rounded-xl border border-border bg-card">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Total Inventory</span>
+              <p className="text-2xl sm:text-3xl font-mono font-bold text-foreground mt-1 tabular-nums">{stats?.rooms.total ?? 0}</p>
             </div>
 
-            <div className="card-surface p-4 rounded-2xl border border-emerald-500/40 bg-emerald-500/5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                <DoorOpen className="size-3" /> Ready for Check-in
+            <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 flex items-center gap-1">
+                <DoorOpen className="size-3" /> Ready
               </span>
-              <p className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400 mt-1 tabular-nums">{stats?.rooms.available ?? "—"}</p>
+              <p className="text-2xl sm:text-3xl font-mono font-bold text-emerald-700 dark:text-emerald-300 mt-1 tabular-nums">{stats?.rooms.available ?? 0}</p>
             </div>
 
-            <div className="card-surface p-4 rounded-2xl border border-rose-500/30 bg-rose-500/5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1">
+            <div className="p-4 rounded-xl border border-rose-500/25 bg-rose-500/5">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-rose-700 dark:text-rose-300 flex items-center gap-1">
                 <DoorClosed className="size-3" /> Occupied
               </span>
-              <p className="text-2xl sm:text-3xl font-black text-rose-600 dark:text-rose-400 mt-1 tabular-nums">{stats?.rooms.occupied ?? "—"}</p>
+              <p className="text-2xl sm:text-3xl font-mono font-bold text-rose-700 dark:text-rose-300 mt-1 tabular-nums">{stats?.rooms.occupied ?? 0}</p>
             </div>
 
-            <div className="card-surface p-4 rounded-2xl border border-sky-500/30 bg-sky-500/5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">Housekeeping Dirty</span>
-              <p className="text-2xl sm:text-3xl font-black text-sky-600 dark:text-sky-400 mt-1 tabular-nums">{stats?.rooms.dirty ?? "—"}</p>
+            <div className="p-4 rounded-xl border border-sky-500/25 bg-sky-500/5">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-sky-700 dark:text-sky-300">Turnover Dirty</span>
+              <p className="text-2xl sm:text-3xl font-mono font-bold text-sky-700 dark:text-sky-300 mt-1 tabular-nums">{stats?.rooms.dirty ?? 0}</p>
             </div>
 
-            <div className="card-surface p-4 rounded-2xl border border-indigo-500/30 bg-indigo-500/5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
-                <Sparkles className="size-3" /> Awaiting Inspection
+            <div className="p-4 rounded-xl border border-indigo-500/25 bg-indigo-500/5">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-indigo-700 dark:text-indigo-300 flex items-center gap-1">
+                <Sparkles className="size-3" /> Inspecting
               </span>
-              <p className="text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 mt-1 tabular-nums">{stats?.rooms.awaiting_inspection ?? "—"}</p>
+              <p className="text-2xl sm:text-3xl font-mono font-bold text-indigo-700 dark:text-indigo-300 mt-1 tabular-nums">{stats?.rooms.awaiting_inspection ?? 0}</p>
             </div>
 
-            <div className="card-surface p-4 rounded-2xl border border-orange-500/30 bg-orange-500/5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-orange-600 dark:text-orange-400 flex items-center gap-1">
-                <Wrench className="size-3" /> Maint. Blocked
+            <div className="p-4 rounded-xl border border-orange-500/25 bg-orange-500/5">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-orange-700 dark:text-orange-300 flex items-center gap-1">
+                <Wrench className="size-3" /> Maint. Block
               </span>
-              <p className="text-2xl sm:text-3xl font-black text-orange-600 dark:text-orange-400 mt-1 tabular-nums">{stats?.rooms.maintenance ?? "—"}</p>
+              <p className="text-2xl sm:text-3xl font-mono font-bold text-orange-700 dark:text-orange-300 mt-1 tabular-nums">{stats?.rooms.maintenance ?? 0}</p>
             </div>
           </div>
         </section>
 
         {/* 2. RESERVATIONS & DISPATCH TELEMETRY */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Active Reservations & Guests */}
-          <section className="card-surface p-5 rounded-3xl border border-border space-y-4">
+          <section className="p-5 rounded-2xl border border-border bg-card space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <CalendarCheck className="size-4 text-primary" /> Today's Guest Flow
+              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <CalendarCheck className="size-3.5 text-primary" /> Today's Guest Flow
               </h2>
-              <Link to="/dashboard/operations" className="text-xs font-bold text-primary hover:underline">
+              <Link to="/dashboard/operations" className="text-xs font-semibold text-primary hover:underline">
                 View Front Desk →
               </Link>
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              <div className="p-3.5 rounded-2xl bg-muted/50 border border-border/80">
-                <span className="text-[10px] font-bold uppercase text-muted-foreground">Arrivals Today</span>
-                <p className="text-2xl font-black text-foreground mt-1 tabular-nums">{stats?.reservations.arrivals_today ?? 0}</p>
+              <div className="p-3.5 rounded-xl bg-background border border-border/80">
+                <span className="text-[10px] font-semibold uppercase text-muted-foreground">Arrivals</span>
+                <p className="text-2xl font-mono font-bold text-foreground mt-1 tabular-nums">{stats?.reservations.arrivals_today ?? 0}</p>
               </div>
-              <div className="p-3.5 rounded-2xl bg-muted/50 border border-border/80">
-                <span className="text-[10px] font-bold uppercase text-muted-foreground">Departures Today</span>
-                <p className="text-2xl font-black text-foreground mt-1 tabular-nums">{stats?.reservations.departures_today ?? 0}</p>
+              <div className="p-3.5 rounded-xl bg-background border border-border/80">
+                <span className="text-[10px] font-semibold uppercase text-muted-foreground">Departures</span>
+                <p className="text-2xl font-mono font-bold text-foreground mt-1 tabular-nums">{stats?.reservations.departures_today ?? 0}</p>
               </div>
-              <div className="p-3.5 rounded-2xl bg-muted/50 border border-border/80">
-                <span className="text-[10px] font-bold uppercase text-muted-foreground">Active Stays</span>
-                <p className="text-2xl font-black text-primary mt-1 tabular-nums">{stats?.reservations.active ?? 0}</p>
+              <div className="p-3.5 rounded-xl bg-background border border-border/80">
+                <span className="text-[10px] font-semibold uppercase text-muted-foreground">Active Stays</span>
+                <p className="text-2xl font-mono font-bold text-primary mt-1 tabular-nums">{stats?.reservations.active ?? 0}</p>
               </div>
             </div>
           </section>
 
           {/* Departmental Staff On Duty */}
-          <section className="card-surface p-5 rounded-3xl border border-border space-y-4">
+          <section className="p-5 rounded-2xl border border-border bg-card space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Users className="size-4 text-primary" /> Staff on Duty ({stats?.staff.on_duty ?? 0} active)
+              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <Users className="size-3.5 text-primary" /> Staff on Duty ({stats?.staff.on_duty ?? 0} active)
               </h2>
-              <Link to="/dashboard/staff" className="text-xs font-bold text-primary hover:underline">
+              <Link to="/dashboard/staff" className="text-xs font-semibold text-primary hover:underline">
                 Manage Staff →
               </Link>
             </div>
@@ -324,9 +327,9 @@ function AdminDashboardPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               {stats?.staff.departments ? (
                 Object.entries(stats.staff.departments).map(([dept, count]) => (
-                  <div key={dept} className="p-3 rounded-2xl bg-muted/50 border border-border/60 text-center">
-                    <p className="text-[10px] font-bold uppercase text-muted-foreground truncate">{dept}</p>
-                    <p className="text-xl font-black text-foreground mt-0.5 tabular-nums">{count}</p>
+                  <div key={dept} className="p-3 rounded-xl bg-background border border-border/80 text-center">
+                    <p className="text-[10px] font-semibold uppercase text-muted-foreground truncate">{dept}</p>
+                    <p className="text-xl font-mono font-bold text-foreground mt-0.5 tabular-nums">{count}</p>
                   </div>
                 ))
               ) : (
@@ -339,34 +342,34 @@ function AdminDashboardPage() {
         </div>
 
         {/* 3. RECENT AUDIT LOGS FEED */}
-        <section className="card-surface p-5 rounded-3xl border border-border space-y-4">
+        <section className="p-5 rounded-2xl border border-border bg-card space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-extrabold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Activity className="size-4 text-primary" /> Live Administrative Audit Log
+              <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <Activity className="size-3.5 text-primary" /> Live Administrative Audit Trail
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                System events, guest pre-registrations, room status changes, and staff dispatches
+                Operational events, room inspections, maintenance dispatches, and guest requests
               </p>
             </div>
             <Link to="/dashboard/reports">
-              <Button size="sm" variant="outline" className="h-8 rounded-xl text-xs font-bold">
+              <Button size="sm" variant="outline" className="h-8 rounded-lg text-xs font-semibold">
                 <FileText className="size-3.5 mr-1" /> Full Reports
               </Button>
             </Link>
           </div>
 
-          <div className="rounded-2xl border border-border/70 overflow-hidden divide-y divide-border/60 max-h-80 overflow-y-auto">
+          <div className="rounded-xl border border-border overflow-hidden divide-y divide-border/60 max-h-80 overflow-y-auto">
             {auditLogs.length === 0 ? (
               <div className="p-6 text-center text-xs text-muted-foreground">
                 No recent audit log entries recorded.
               </div>
             ) : (
               auditLogs.map((log, idx) => (
-                <div key={idx} className="p-3.5 text-xs hover:bg-muted/40 transition-colors flex items-start justify-between gap-3">
+                <div key={idx} className="p-3 text-xs hover:bg-muted/40 transition-colors flex items-start justify-between gap-3">
                   <div className="space-y-0.5 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-muted text-foreground border border-border">
+                      <span className="font-mono text-[10px] font-semibold px-1.5 py-0.2 rounded bg-muted text-foreground border border-border/80">
                         {String(log.event_type || "EVENT")}
                       </span>
                       <span className="font-semibold text-foreground truncate">
@@ -377,7 +380,7 @@ function AdminDashboardPage() {
                       Actor: <span className="font-medium text-foreground">{String(log.actor_id || "System")}</span> ({String(log.actor_type || "auto")})
                     </p>
                   </div>
-                  <span className="text-[10px] text-muted-foreground shrink-0 tabular-nums">
+                  <span className="font-mono text-[10px] text-muted-foreground shrink-0 tabular-nums">
                     {log.created_at ? new Date(String(log.created_at)).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "just now"}
                   </span>
                 </div>

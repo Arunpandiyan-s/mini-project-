@@ -11,7 +11,7 @@ import { guestLogin, setGuestToken, getGuestToken, getGuestMe, removeGuestToken 
 export const Route = createFileRoute("/guest/login")({
   head: () => ({
     meta: [
-      { title: "Guest Sign In — StayEase Guest Portal" },
+      { title: "Guest Sign In: StayEase Guest Portal" },
       {
         name: "description",
         content:

@@ -24,7 +24,7 @@ import { loginStaff, setToken } from "@/lib/api";
 export const Route = createFileRoute("/admin/login")({
   head: () => ({
     meta: [
-      { title: "Admin Portal Sign In — StayEase Management Console" },
+      { title: "Admin Portal Sign In: StayEase Executive Console" },
       {
         name: "description",
         content:

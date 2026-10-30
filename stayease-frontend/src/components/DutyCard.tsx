@@ -1,58 +1,73 @@
-import { CheckCircle2, ClipboardList, Clock, Power } from "lucide-react";
-import { toast } from "sonner";
+import { CheckCircle2, ClipboardList, Clock, Power, Shield, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/lib/store";
 
 export function DutyCard() {
-  const { onDuty, dutyStart, toggleDuty, tasks, session, pushActivity } = useApp();
+  const { onDuty, dutyStart, toggleDuty, tasks, session } = useApp();
   const mine = tasks.filter((t) => t.role === session?.role);
   const completed = mine.filter((t) => t.status === "Completed").length;
 
-  const handle = () => {
-    toggleDuty();
-  };
-
   return (
-    <section className="surface hero-gradient overflow-hidden p-5 sm:p-6">
+    <section className="rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-soft transition-all">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-        <div className="min-w-0">
+        <div className="min-w-0 space-y-2">
           <div className="flex items-center gap-2">
             <span
-              className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${
-                onDuty ? "bg-success/15 text-success" : "bg-muted text-muted-foreground"
+              className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-0.5 text-xs font-semibold tracking-wide uppercase ${
+                onDuty
+                  ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/25"
+                  : "bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20"
               }`}
             >
-              <span className="size-2 rounded-full bg-current" />
-              {onDuty ? "On Duty" : "Off Duty"}
+              <span
+                className={`size-1.5 rounded-full ${
+                  onDuty ? "bg-emerald-500 animate-pulse" : "bg-slate-400"
+                }`}
+              />
+              {onDuty ? "Shift Active · On Duty" : "Standby · Off Duty"}
             </span>
+
+            {session?.name && (
+              <span className="text-xs text-muted-foreground font-mono">
+                Staff: <span className="font-semibold text-foreground">{session.name}</span>
+              </span>
+            )}
           </div>
-          <h2 className="mt-3 text-2xl font-bold">
-            {onDuty ? "You're on shift" : "Ready to start your shift?"}
+
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+            {onDuty ? "Current Shift Roster" : "Start your assigned shift"}
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground max-w-xl leading-relaxed">
             {onDuty
-              ? "Attendance marked. Your assigned tasks are visible below."
-              : "Start duty to mark attendance and unlock today's assigned tasks."}
+              ? "Attendance confirmed. Your queue is synchronized with live room requests and automated dispatch."
+              : "Mark attendance to record your shift timestamp and unlock departmental task assignment."}
           </p>
         </div>
 
         <Button
           size="lg"
-          onClick={handle}
-          className={`h-16 w-full rounded-2xl text-base font-semibold lg:w-56 ${
-            onDuty ? "bg-destructive hover:bg-destructive/90" : ""
+          onClick={toggleDuty}
+          className={`h-12 w-full rounded-xl text-xs sm:text-sm font-bold tracking-tight lg:w-48 shadow-xs flex items-center justify-center gap-2 ${
+            onDuty
+              ? "bg-rose-600 hover:bg-rose-500 text-white"
+              : "bg-primary hover:bg-primary/90 text-primary-foreground"
           }`}
         >
-          <Power className="size-5" />
-          {onDuty ? "End Duty" : "Start Duty"}
+          <Power className="size-4" />
+          {onDuty ? "Conclude Duty" : "Start Shift Duty"}
         </Button>
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <MiniStat icon={Clock} label="Duty start" value={dutyStart ?? "--:--"} />
-        <MiniStat icon={Clock} label="Shift duration" value={onDuty ? "Live" : "0h 00m"} />
-        <MiniStat icon={ClipboardList} label="Tasks today" value={String(mine.length)} />
-        <MiniStat icon={CheckCircle2} label="Completed" value={String(completed)} />
+      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4 pt-5 border-t border-border/60">
+        <MiniStat icon={Clock} label="Shift Started" value={dutyStart ?? "Not clocked in"} />
+        <MiniStat
+          icon={UserCheck}
+          label="Duty Status"
+          value={onDuty ? "Active On Shift" : "Standby"}
+          highlight={onDuty}
+        />
+        <MiniStat icon={ClipboardList} label="Assigned Tasks" value={String(mine.length)} />
+        <MiniStat icon={CheckCircle2} label="Completed Tasks" value={String(completed)} />
       </div>
     </section>
   );
@@ -62,17 +77,25 @@ function MiniStat({
   icon: Icon,
   label,
   value,
+  highlight = false,
 }: {
   icon: typeof Clock;
   label: string;
   value: string;
+  highlight?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card/80 p-3">
-      <p className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-        <Icon className="size-3.5" /> {label}
+    <div className="rounded-xl border border-border/80 bg-background/60 p-3.5 space-y-1">
+      <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <Icon className="size-3.5 text-primary" /> {label}
       </p>
-      <p className="mt-1 truncate font-display text-lg font-bold">{value}</p>
+      <p
+        className={`font-mono text-base font-bold tabular-nums truncate ${
+          highlight ? "text-emerald-600 dark:text-emerald-400" : "text-foreground"
+        }`}
+      >
+        {value}
+      </p>
     </div>
   );
 }

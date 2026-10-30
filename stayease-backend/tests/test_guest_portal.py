@@ -77,10 +77,10 @@ def get_staff_token(staff_id: str = "EMP-1001", password: str = "password123") -
 def test_schema_migrations_run_twice(db):
     # Migration run first time (automatic on start, but let's invoke it explicitly)
     # The fixture metadata.create_all creates everything, run_safe_schema_migrations checks column
-    run_safe_schema_migrations()
+    run_safe_schema_migrations(engine)
     
     # Run second time: must not raise error, must be idempotent
-    run_safe_schema_migrations()
+    run_safe_schema_migrations(engine)
     
     # Assert column exists
     from sqlalchemy import inspect

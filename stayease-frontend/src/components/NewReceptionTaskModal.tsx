@@ -64,7 +64,7 @@ export function NewReceptionTaskModal() {
             </span>
             <div>
               <DialogTitle className="font-display text-xl font-bold text-foreground">
-                ⚡ New Reception Task Assigned!
+                New Reception Task Assigned
               </DialogTitle>
               <DialogDescription className="text-xs font-semibold text-amber-600 dark:text-amber-400">
                 Assigned by Customer / Manager · Alarm sounding ({alarmSeconds}s)
@@ -75,13 +75,13 @@ export function NewReceptionTaskModal() {
 
         <div className="space-y-4 pt-2">
           {/* Task Details Card */}
-          <div className="p-4 rounded-2xl bg-muted/60 border border-border space-y-2 text-xs">
+          <div className="p-4 rounded-xl bg-muted/60 border border-border space-y-2 text-xs">
             <div className="flex items-center justify-between">
-              <span className="font-extrabold text-sm text-foreground">
+              <span className="font-mono font-bold text-xs text-foreground">
                 {newReceptionTaskAlert.id}
               </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-extrabold text-[11px]">
-                Room {newReceptionTaskAlert.room}
+              <span className="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-700 dark:text-amber-400 font-mono font-bold text-xs border border-amber-500/30">
+                ROOM {newReceptionTaskAlert.room}
               </span>
             </div>
 
@@ -90,10 +90,10 @@ export function NewReceptionTaskModal() {
                 Task Type: <span className="text-foreground font-bold">{newReceptionTaskAlert.type}</span>
               </p>
               <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                Priority: <span className="text-destructive font-bold">{newReceptionTaskAlert.priority} 🔥</span>
+                Priority: <span className="text-destructive font-bold">{newReceptionTaskAlert.priority}</span>
               </p>
               <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                Assigned Staff: <span className="text-primary font-bold">{newReceptionTaskAlert.assignedTo || "Anita Sharma"}</span>
+                Assigned Staff: <span className="text-foreground font-bold">{newReceptionTaskAlert.assignedTo || "Anita Sharma"}</span>
               </p>
             </div>
 

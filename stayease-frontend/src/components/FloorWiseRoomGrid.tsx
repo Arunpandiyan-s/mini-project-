@@ -44,94 +44,94 @@ const STATUS_CONFIG: Record<
   { bg: string; badgeBg: string; text: string; dot: string; label: string }
 > = {
   Available: {
-    bg: "bg-emerald-600/10 border-emerald-600/30",
-    badgeBg: "bg-emerald-600 text-white font-bold",
-    text: "text-emerald-700 dark:text-emerald-400",
-    dot: "🟢",
+    bg: "bg-emerald-500/5 border-emerald-500/25",
+    badgeBg: "bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-500/30 font-semibold",
+    text: "text-emerald-700 dark:text-emerald-300",
+    dot: "bg-emerald-500",
     label: "Available",
   },
   Occupied: {
-    bg: "bg-rose-600/10 border-rose-600/30",
-    badgeBg: "bg-rose-600 text-white font-bold",
-    text: "text-rose-700 dark:text-rose-400",
-    dot: "🔴",
+    bg: "bg-rose-500/5 border-rose-500/25",
+    badgeBg: "bg-rose-500/10 text-rose-800 dark:text-rose-300 border-rose-500/30 font-semibold",
+    text: "text-rose-700 dark:text-rose-300",
+    dot: "bg-rose-500",
     label: "Occupied",
   },
   Reserved: {
-    bg: "bg-amber-400/20 border-amber-500/40",
-    badgeBg: "bg-amber-400 text-slate-950 font-bold",
+    bg: "bg-amber-500/5 border-amber-500/25",
+    badgeBg: "bg-amber-500/10 text-amber-800 dark:text-amber-300 border-amber-500/30 font-semibold",
     text: "text-amber-700 dark:text-amber-300",
-    dot: "🟡",
+    dot: "bg-amber-500",
     label: "Reserved",
   },
   Cleaning: {
-    bg: "bg-sky-500/10 border-sky-500/30",
-    badgeBg: "bg-sky-500 text-white font-bold",
-    text: "text-sky-700 dark:text-sky-400",
-    dot: "🔵",
+    bg: "bg-sky-500/5 border-sky-500/25",
+    badgeBg: "bg-sky-500/10 text-sky-800 dark:text-sky-300 border-sky-500/30 font-semibold",
+    text: "text-sky-700 dark:text-sky-300",
+    dot: "bg-sky-500 animate-pulse",
     label: "Cleaning",
   },
   Maintenance: {
-    bg: "bg-orange-500/10 border-orange-500/30",
-    badgeBg: "bg-orange-500 text-white font-bold",
-    text: "text-orange-700 dark:text-orange-400",
-    dot: "🟠",
+    bg: "bg-orange-500/5 border-orange-500/25",
+    badgeBg: "bg-orange-500/10 text-orange-800 dark:text-orange-300 border-orange-500/30 font-semibold",
+    text: "text-orange-700 dark:text-orange-300",
+    dot: "bg-orange-500",
     label: "Maintenance",
   },
   "Cleaning Required": {
-    bg: "bg-slate-500/10 border-slate-500/30",
-    badgeBg: "bg-slate-600 text-white font-bold",
+    bg: "bg-slate-500/5 border-slate-500/25",
+    badgeBg: "bg-slate-500/10 text-slate-800 dark:text-slate-300 border-slate-500/30 font-semibold",
     text: "text-slate-700 dark:text-slate-300",
-    dot: "⚪",
+    dot: "bg-slate-400",
     label: "Clean Req.",
   },
   "Cleaning In Progress": {
-    bg: "bg-sky-500/10 border-sky-500/30",
-    badgeBg: "bg-sky-500 text-white font-bold",
-    text: "text-sky-700 dark:text-sky-400",
-    dot: "🔵",
+    bg: "bg-sky-500/5 border-sky-500/25",
+    badgeBg: "bg-sky-500/10 text-sky-800 dark:text-sky-300 border-sky-500/30 font-semibold",
+    text: "text-sky-700 dark:text-sky-300",
+    dot: "bg-sky-500 animate-pulse",
     label: "Cleaning In Progress",
   },
   "Waiting Cleaning Verification": {
-    bg: "bg-indigo-500/15 border-indigo-500/30",
-    badgeBg: "bg-indigo-600 text-white font-bold",
+    bg: "bg-indigo-500/5 border-indigo-500/25",
+    badgeBg: "bg-indigo-500/10 text-indigo-800 dark:text-indigo-300 border-indigo-500/30 font-semibold",
     text: "text-indigo-700 dark:text-indigo-300",
-    dot: "🟣",
+    dot: "bg-indigo-500 animate-pulse",
     label: "Wait Clean Verif.",
   },
   "Maintenance Required": {
-    bg: "bg-orange-500/10 border-orange-500/30",
-    badgeBg: "bg-orange-500 text-white font-bold",
-    text: "text-orange-700 dark:text-orange-400",
-    dot: "🟠",
+    bg: "bg-orange-500/5 border-orange-500/25",
+    badgeBg: "bg-orange-500/10 text-orange-800 dark:text-orange-300 border-orange-500/30 font-semibold",
+    text: "text-orange-700 dark:text-orange-300",
+    dot: "bg-orange-500",
     label: "Maint Required",
   },
   "Under Maintenance": {
-    bg: "bg-amber-600/15 border-amber-600/30",
-    badgeBg: "bg-amber-600 text-white font-bold",
+    bg: "bg-amber-600/5 border-amber-600/25",
+    badgeBg: "bg-amber-600/10 text-amber-800 dark:text-amber-300 border-amber-600/30 font-semibold",
     text: "text-amber-700 dark:text-amber-300",
-    dot: "🟤",
+    dot: "bg-amber-600 animate-pulse",
     label: "Under Maint.",
   },
   "Waiting Maintenance Verification": {
-    bg: "bg-rose-500/15 border-rose-500/30",
-    badgeBg: "bg-rose-600 text-white font-bold",
+    bg: "bg-rose-500/5 border-rose-500/25",
+    badgeBg: "bg-rose-500/10 text-rose-800 dark:text-rose-300 border-rose-500/30 font-semibold",
     text: "text-rose-700 dark:text-rose-300",
-    dot: "🟣",
+    dot: "bg-rose-500 animate-pulse",
     label: "Wait Maint Verif.",
   },
   "Out of Service": {
-    bg: "bg-slate-700/20 border-slate-700/40",
-    badgeBg: "bg-slate-700 text-white font-bold",
+    bg: "bg-slate-700/5 border-slate-700/25",
+    badgeBg: "bg-slate-700/10 text-slate-800 dark:text-slate-300 border-slate-700/30 font-semibold",
     text: "text-slate-700 dark:text-slate-300",
-    dot: "⚫",
+    dot: "bg-slate-600",
     label: "Out of Service",
   },
   Blocked: {
-    bg: "bg-red-900/20 border-red-900/40",
-    badgeBg: "bg-red-800 text-white font-bold",
+    bg: "bg-red-900/5 border-red-900/25",
+    badgeBg: "bg-red-900/10 text-red-800 dark:text-red-300 border-red-900/30 font-semibold",
     text: "text-red-700 dark:text-red-300",
-    dot: "⛔",
+    dot: "bg-red-700",
     label: "Blocked",
   },
 };
@@ -352,9 +352,9 @@ export function FloorWiseRoomGrid() {
           label="Available"
           value={summary.available}
           icon={DoorOpen}
-          color="text-emerald-600"
-          bg="bg-emerald-600/10 border-emerald-600/30"
-          dot="🟢"
+          color="text-emerald-700 dark:text-emerald-300"
+          bg="bg-card border-border"
+          dotColor="bg-emerald-500"
           active={selectedStatus === "Available"}
           onClick={() => setSelectedStatus("Available")}
         />
@@ -362,9 +362,9 @@ export function FloorWiseRoomGrid() {
           label="Occupied"
           value={summary.occupied}
           icon={DoorClosed}
-          color="text-rose-600"
-          bg="bg-rose-600/10 border-rose-600/30"
-          dot="🔴"
+          color="text-rose-700 dark:text-rose-300"
+          bg="bg-card border-border"
+          dotColor="bg-rose-500"
           active={selectedStatus === "Occupied"}
           onClick={() => setSelectedStatus("Occupied")}
         />
@@ -372,9 +372,9 @@ export function FloorWiseRoomGrid() {
           label="Reserved"
           value={summary.reserved}
           icon={Clock}
-          color="text-amber-600"
-          bg="bg-amber-400/20 border-amber-500/30"
-          dot="🟡"
+          color="text-amber-700 dark:text-amber-300"
+          bg="bg-card border-border"
+          dotColor="bg-amber-500"
           active={selectedStatus === "Reserved"}
           onClick={() => setSelectedStatus("Reserved")}
         />
@@ -382,9 +382,9 @@ export function FloorWiseRoomGrid() {
           label="Maintenance"
           value={summary.maintenance}
           icon={Wrench}
-          color="text-orange-600"
-          bg="bg-orange-500/10 border-orange-500/30"
-          dot="🟠"
+          color="text-orange-700 dark:text-orange-300"
+          bg="bg-card border-border"
+          dotColor="bg-orange-500"
           active={selectedStatus === "Maintenance"}
           onClick={() => setSelectedStatus("Maintenance")}
         />
@@ -406,12 +406,13 @@ export function FloorWiseRoomGrid() {
                   type="button"
                   onClick={() => setSelectedStatus(isSelected ? "All" : st)}
                   className={cn(
-                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-xs transition-all cursor-pointer hover:scale-105",
+                    "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold border shadow-2xs transition-all cursor-pointer hover:border-foreground/30",
                     cfg.badgeBg,
                     isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background"
                   )}
                 >
-                  <span>{cfg.dot}</span> {cfg.label}
+                  <span className={cn("size-1.5 rounded-full inline-block shrink-0", cfg.dot)} />
+                  <span>{cfg.label}</span>
                 </button>
               );
             })}
@@ -495,11 +496,11 @@ export function FloorWiseRoomGrid() {
               className="h-11 px-3 rounded-xl border border-border bg-card text-foreground text-xs font-bold focus:outline-none focus:ring-2 focus:ring-primary w-full sm:w-auto"
             >
               <option value="All">All Statuses</option>
-              <option value="Available">Available 🟢</option>
-              <option value="Occupied">Occupied 🔴</option>
-              <option value="Reserved">Reserved 🟡</option>
-              <option value="Maintenance">Maintenance 🟠</option>
-              <option value="Cleaning">Cleaning 🔵</option>
+              <option value="Available">Available</option>
+              <option value="Occupied">Occupied</option>
+              <option value="Reserved">Reserved</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Cleaning">Cleaning</option>
             </select>
 
             {/* Capacity Filter */}
@@ -660,8 +661,9 @@ export function FloorWiseRoomGrid() {
             <DialogTitle className="font-display text-2xl font-bold flex items-center justify-between text-foreground">
               <span>Room {detailRoom?.number}</span>
               {detailRoom && (
-                <span className={cn("text-xs font-bold px-3 py-1 rounded-full border", STATUS_CONFIG[detailRoom.status].badgeBg)}>
-                  {STATUS_CONFIG[detailRoom.status].dot} {detailRoom.status}
+                <span className={cn("text-xs font-semibold px-2.5 py-0.5 rounded-md border inline-flex items-center gap-1.5", STATUS_CONFIG[detailRoom.status].badgeBg)}>
+                  <span className={cn("size-2 rounded-full inline-block shrink-0", STATUS_CONFIG[detailRoom.status].dot)} />
+                  {detailRoom.status}
                 </span>
               )}
             </DialogTitle>
@@ -753,17 +755,17 @@ function RichRoomCard({
       {/* Header: Room # & Status Badge */}
       <div className="flex items-start justify-between gap-2 pb-2 min-w-0">
         <div className="min-w-0 flex-1">
-          <span className="font-display text-xl font-extrabold text-foreground block truncate">Room {room.number}</span>
-          <p className="text-xs font-semibold text-muted-foreground mt-0.5 truncate">{room.type}</p>
+          <span className="font-mono text-lg sm:text-xl font-extrabold text-foreground block truncate">Room {room.number}</span>
+          <p className="text-xs font-medium text-muted-foreground mt-0.5 truncate">{room.type}</p>
         </div>
         <span
           title={room.status}
           className={cn(
-            "px-2.5 py-1 rounded-full text-[11px] font-bold border shadow-xs shrink-0 inline-flex items-center gap-1 leading-tight max-w-[60%] truncate",
+            "px-2 py-0.5 rounded-md text-[11px] font-semibold border shadow-2xs shrink-0 inline-flex items-center gap-1.5 leading-tight max-w-[60%] truncate",
             cfg.badgeBg
           )}
         >
-          <span className="shrink-0">{cfg.dot}</span>
+          <span className={cn("size-1.5 rounded-full inline-block shrink-0", cfg.dot)} />
           <span className="truncate">{cfg.label}</span>
         </span>
       </div>
@@ -843,7 +845,7 @@ function SummaryCard({
   icon: Icon,
   color,
   bg,
-  dot,
+  dotColor,
   active,
   onClick,
 }: {
@@ -852,7 +854,7 @@ function SummaryCard({
   icon: typeof BedDouble;
   color: string;
   bg: string;
-  dot?: string;
+  dotColor?: string;
   active?: boolean;
   onClick?: () => void;
 }) {
@@ -862,19 +864,20 @@ function SummaryCard({
       role="button"
       tabIndex={0}
       className={cn(
-        "rounded-2xl border p-3 sm:p-4 flex items-center justify-between shadow-xs transition-all cursor-pointer hover:-translate-y-0.5 hover:shadow-md select-none min-w-0",
+        "rounded-xl border p-3 sm:p-4 flex items-center justify-between shadow-2xs transition-all cursor-pointer hover:border-foreground/30 hover:shadow-soft select-none min-w-0",
         bg,
-        active && "ring-2 ring-primary ring-offset-2 ring-offset-background scale-[1.02]"
+        active && "ring-2 ring-primary ring-offset-2 ring-offset-background"
       )}
     >
       <div className="min-w-0">
-        <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1 truncate">
-          {dot && <span>{dot}</span>} <span className="truncate">{label}</span>
+        <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 truncate">
+          {dotColor && <span className={cn("size-2 rounded-full inline-block shrink-0", dotColor)} />}
+          <span className="truncate">{label}</span>
         </p>
-        <p className={cn("font-display text-xl sm:text-2xl lg:text-3xl font-extrabold mt-0.5 sm:mt-1 tabular-nums", color)}>{value}</p>
+        <p className={cn("font-mono text-xl sm:text-2xl lg:text-3xl font-extrabold mt-0.5 sm:mt-1 tabular-nums", color)}>{value}</p>
       </div>
-      <span className="grid size-8 sm:size-10 shrink-0 place-items-center rounded-xl bg-muted/60 text-muted-foreground ml-2">
-        <Icon className="size-4 sm:size-5" />
+      <span className="grid size-8 sm:size-9 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground ml-2">
+        <Icon className="size-4 sm:size-4.5" />
       </span>
     </div>
   );

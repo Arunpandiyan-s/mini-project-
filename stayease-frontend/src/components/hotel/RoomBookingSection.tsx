@@ -166,8 +166,8 @@ export function RoomBookingSection() {
                   <p className="text-xs text-muted-foreground">
                     {b.reservation_id} · {b.room_type}
                   </p>
-                  <p className="text-[11px] text-muted-foreground">
-                    Check-in: {new Date(b.check_in).toLocaleDateString()} — Check-out: {new Date(b.check_out).toLocaleDateString()}
+                  <p className="text-[11px] text-muted-foreground font-mono">
+                    Check-in: {new Date(b.check_in).toLocaleDateString()} · Check-out: {new Date(b.check_out).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -179,7 +179,7 @@ export function RoomBookingSection() {
       {/* Booking Modal */}
       {bookingModalOpen && selectedRoom && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-sm card-surface p-6 space-y-4">
+          <div className="w-full max-w-sm surface p-6 space-y-4 border border-border/80 shadow-2xl">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-base">Book Room {selectedRoom.room_number}</h3>
               <button

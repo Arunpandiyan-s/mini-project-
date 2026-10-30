@@ -41,13 +41,13 @@ import { TaskVerificationModal } from "@/components/TaskVerificationModal";
 /* ─── STATUS BADGE STYLING CONFIG ─────────────────────────────────── */
 const TASK_STATUS_CONFIG: Record<
   string,
-  { bg: string; dot: string; label: string }
+  { bg: string; dotColor: string; label: string }
 > = {
-  Completed: { bg: "bg-emerald-600 text-white font-bold", dot: "🟢", label: "Completed" },
-  Pending: { bg: "bg-amber-400 text-slate-950 font-bold", dot: "🟡", label: "Pending" },
-  "In Progress": { bg: "bg-sky-500 text-white font-bold", dot: "🔵", label: "In Progress" },
-  Delayed: { bg: "bg-rose-600 text-white font-bold", dot: "🔴", label: "Delayed" },
-  "Attention Needed": { bg: "bg-orange-500 text-white font-bold", dot: "🟠", label: "Escalated" },
+  Completed: { bg: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/25", dotColor: "bg-emerald-500", label: "Completed" },
+  Pending: { bg: "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/25", dotColor: "bg-amber-500", label: "Pending" },
+  "In Progress": { bg: "bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/25", dotColor: "bg-sky-500", label: "In Progress" },
+  Delayed: { bg: "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/25", dotColor: "bg-rose-500", label: "Delayed" },
+  "Attention Needed": { bg: "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/25", dotColor: "bg-orange-500", label: "Escalated" },
 };
 
 const STAFF_LIST = [
@@ -243,15 +243,15 @@ export function OperationsMonitoringPanel() {
             <TrendingUp className="size-4 text-primary" /> Service SLA Averages
           </h4>
           <div className="space-y-3 text-xs">
-            <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-500/20">
+            <div className="p-3 rounded-xl bg-primary/5 border border-primary/15">
               <p className="text-[10px] uppercase font-bold text-muted-foreground">Avg Cleaning Turnaround</p>
-              <p className="font-display text-2xl font-extrabold text-sky-700 dark:text-sky-400 mt-0.5">28 Mins</p>
-              <p className="text-[10px] text-muted-foreground mt-1">SLA Target: 35 Mins (🟢 On Track)</p>
+              <p className="font-display text-2xl font-bold tracking-tight tabular-nums text-foreground mt-0.5">28 Mins</p>
+              <p className="text-[10px] text-muted-foreground mt-1">SLA Target: 35 Mins (On Track)</p>
             </div>
-            <div className="p-3 rounded-xl bg-orange-500/10 border border-orange-500/20">
+            <div className="p-3 rounded-xl bg-primary/5 border border-primary/15">
               <p className="text-[10px] uppercase font-bold text-muted-foreground">Avg Maintenance Repair</p>
-              <p className="font-display text-2xl font-extrabold text-orange-700 dark:text-orange-400 mt-0.5">42 Mins</p>
-              <p className="text-[10px] text-muted-foreground mt-1">SLA Target: 60 Mins (🟢 On Track)</p>
+              <p className="font-display text-2xl font-bold tracking-tight tabular-nums text-foreground mt-0.5">42 Mins</p>
+              <p className="text-[10px] text-muted-foreground mt-1">SLA Target: 60 Mins (On Track)</p>
             </div>
           </div>
         </div>
@@ -278,9 +278,9 @@ export function OperationsMonitoringPanel() {
               className="h-11 px-3 rounded-xl border border-border bg-card text-foreground text-xs font-bold focus:outline-none"
             >
               <option value="All">All Departments</option>
-              <option value="housekeeping">Housekeeping 🧹</option>
-              <option value="maintenance">Maintenance 🛠️</option>
-              <option value="reception">Reception 🛎️</option>
+              <option value="housekeeping">Housekeeping</option>
+              <option value="maintenance">Maintenance</option>
+              <option value="reception">Reception</option>
             </select>
 
             <select
@@ -289,8 +289,8 @@ export function OperationsMonitoringPanel() {
               className="h-11 px-3 rounded-xl border border-border bg-card text-foreground text-xs font-bold focus:outline-none"
             >
               <option value="All">All Priorities</option>
-              <option value="Urgent">Urgent 🔥</option>
-              <option value="High">High ⚡</option>
+              <option value="Urgent">Urgent</option>
+              <option value="High">High</option>
               <option value="Medium">Medium</option>
               <option value="Low">Low</option>
             </select>
@@ -301,10 +301,10 @@ export function OperationsMonitoringPanel() {
               className="h-11 px-3 rounded-xl border border-border bg-card text-foreground text-xs font-bold focus:outline-none"
             >
               <option value="All">All Statuses</option>
-              <option value="Pending">Pending 🟡</option>
-              <option value="In Progress">In Progress 🔵</option>
-              <option value="Completed">Completed 🟢</option>
-              <option value="Attention Needed">Escalated 🟠</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+              <option value="Attention Needed">Escalated</option>
             </select>
 
             <select
@@ -359,8 +359,8 @@ export function OperationsMonitoringPanel() {
                   const cfg = TASK_STATUS_CONFIG[task.status] ?? defaultCfg;
                   return (
                     <tr key={task.id} className="hover:bg-muted/40 transition-colors">
-                      <td className="p-3 font-bold text-foreground">{task.id}</td>
-                      <td className="p-3 font-bold text-primary">Room {task.room}</td>
+                      <td className="p-3 font-mono text-xs text-muted-foreground">{task.id}</td>
+                      <td className="p-3 font-mono font-bold text-foreground">ROOM {task.room}</td>
                       <td className="p-3 font-semibold text-foreground">{task.type}</td>
                       <td className="p-3 uppercase font-bold text-muted-foreground text-[10px]">{task.role}</td>
                       <td className="p-3">
@@ -376,21 +376,21 @@ export function OperationsMonitoringPanel() {
                       </td>
                       <td className="p-3">
                         <span className={cn(
-                          "px-2.5 py-1 rounded-full text-xs font-extrabold border inline-flex items-center gap-1",
-                          task.priority === "Urgent" ? "bg-destructive/15 text-destructive border-destructive/30 font-bold" :
-                          task.priority === "High" ? "bg-orange-500/15 text-orange-700 dark:text-orange-300 border-orange-500/30 font-bold" :
-                          "bg-card text-foreground border-border"
+                          "px-2 py-0.5 rounded-md text-xs font-semibold border inline-flex items-center gap-1",
+                          task.priority === "Urgent" ? "bg-destructive/15 text-destructive border-destructive/30" :
+                          task.priority === "High" ? "bg-orange-500/15 text-orange-700 dark:text-orange-300 border-orange-500/30" :
+                          "bg-muted text-muted-foreground border-border"
                         )}>
-                          <span>🤖 AI</span> {task.priority}
+                          {task.priority}
                         </span>
                       </td>
                       <td className="p-3">
-                        <span className={cn("px-2.5 py-1 rounded-full text-xs font-bold border shadow-xs inline-flex items-center gap-1", cfg.bg)}>
-                          <span>{cfg.dot}</span> {cfg.label}
+                        <span className={cn("px-2 py-0.5 rounded-md text-xs font-semibold border inline-flex items-center gap-1.5", cfg.bg)}>
+                          <span className={cn("size-1.5 rounded-full", cfg.dotColor)} /> {cfg.label}
                         </span>
                       </td>
-                      <td className="p-3 text-muted-foreground">{task.assignedAt}</td>
-                      <td className="p-3 font-bold text-foreground">{task.eta}</td>
+                      <td className="p-3 text-muted-foreground font-mono text-xs tabular-nums">{task.assignedAt}</td>
+                      <td className="p-3 font-mono text-xs font-bold text-foreground tabular-nums">{task.eta}</td>
                       <td className="p-3 text-right">
                         {task.status === "Completed" ? (
                           <Button
@@ -453,10 +453,10 @@ export function OperationsMonitoringPanel() {
                   onChange={(e) => setNewTaskRole(e.target.value as RoleId)}
                   className="w-full h-11 px-3 rounded-xl border border-border bg-card text-foreground text-sm font-semibold focus:outline-none"
                 >
-                  <option value="housekeeping">Housekeeping 🧹</option>
-                  <option value="maintenance">Maintenance 🛠️</option>
-                  <option value="fnb">Food & Beverage 🍽️</option>
-                  <option value="reception">Reception 🛎️</option>
+                  <option value="housekeeping">Housekeeping</option>
+                  <option value="maintenance">Maintenance</option>
+                  <option value="fnb">Food & Beverage</option>
+                  <option value="reception">Reception</option>
                 </select>
               </div>
 
@@ -481,8 +481,8 @@ export function OperationsMonitoringPanel() {
                 >
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
-                  <option value="High">High ⚡</option>
-                  <option value="Urgent">Urgent 🔥</option>
+                  <option value="High">High</option>
+                  <option value="Urgent">Urgent</option>
                 </select>
               </div>
 
@@ -556,8 +556,8 @@ export function OperationsMonitoringPanel() {
                     <p className="font-bold text-foreground">{item.type} · Room {item.room}</p>
                     <p className="text-muted-foreground">{item.id} · Role: {item.role}</p>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-600/10 text-emerald-700 font-bold border border-emerald-600/30">
-                    Completed 🟢
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-semibold border border-emerald-500/25 text-xs inline-flex items-center gap-1.5">
+                    <span className="size-1.5 rounded-full bg-emerald-500" /> Completed
                   </span>
                 </div>
               ))

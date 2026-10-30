@@ -23,41 +23,41 @@ export function RoomInfoCard({ stay }: { stay?: ApiGuestStay | null }) {
       toast.success("Wi-Fi password copied");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Couldn't copy — please type it manually");
+      toast.error("Couldn't copy: please enter it manually");
     }
   };
 
   return (
-    <section className="card-surface overflow-hidden">
+    <section className="rounded-xl border border-border bg-card overflow-hidden shadow-soft">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className="flex w-full items-center gap-3 p-4 text-left"
+        className="flex w-full items-center gap-3 p-4 text-left hover:bg-accent/40 transition-colors"
       >
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-secondary text-primary">
-          <Wifi className="h-5 w-5" />
+        <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary border border-primary/20">
+          <Wifi className="size-4" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-semibold">Room information</span>
+          <span className="block text-sm font-bold text-foreground">Room information</span>
           <span className="block text-xs text-muted-foreground">
-            Wi-Fi, TV, AC, policies & emergency
+            Wi-Fi network, climate controls, room policies and emergency line
           </span>
         </span>
         <ChevronDown
-          className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+          className={`size-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 
       {open && (
         <div className="space-y-3 border-t border-border px-4 pb-5 pt-4">
-          <div className="rounded-xl bg-secondary/60 p-3">
-            <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Room type</p>
-            <p className="text-sm font-semibold">{stay?.room.room_type ?? "—"}</p>
+          <div className="rounded-lg bg-secondary/50 border border-border/60 p-3">
+            <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">Room type</p>
+            <p className="text-sm font-bold text-foreground mt-0.5">{stay?.room.room_type ?? "Standard Deluxe Suite"}</p>
           </div>
-          <div className="rounded-xl bg-secondary/60 p-3">
-            <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Wi-Fi network</p>
-            <p className="text-sm font-semibold">{roomInfo.wifiName}</p>
+          <div className="rounded-lg bg-secondary/50 border border-border/60 p-3">
+            <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">Wi-Fi network</p>
+            <p className="text-sm font-bold text-foreground font-mono mt-0.5">{roomInfo.wifiName}</p>
             <div className="mt-2 flex items-center justify-between gap-3">
               <span className="font-mono text-sm">{roomInfo.wifiPassword}</span>
               <button

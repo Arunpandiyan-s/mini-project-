@@ -24,7 +24,7 @@ import type { GuestPreRegisterResponse } from "@/lib/types";
 export const Route = createFileRoute("/pre-register")({
   head: () => ({
     meta: [
-      { title: "Digital Pre-Registration — StayEase" },
+      { title: "Digital Pre-Registration: StayEase" },
       {
         name: "description",
         content: "Complete digital pre-registration for your upcoming hotel stay at StayEase.",
@@ -125,7 +125,7 @@ function PreRegisterPage() {
                 <span className="text-muted-foreground font-semibold">Stay Dates:</span>
                 <span className="font-medium text-foreground flex items-center gap-1.5 text-xs">
                   <Calendar className="size-3.5 text-muted-foreground" />
-                  {new Date(confirmation.check_in).toLocaleDateString()} — {new Date(confirmation.check_out).toLocaleDateString()}
+                  {new Date(confirmation.check_in).toLocaleDateString()} to {new Date(confirmation.check_out).toLocaleDateString()}
                 </span>
               </div>
             </div>

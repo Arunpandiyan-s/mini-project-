@@ -4,22 +4,26 @@ import { cn } from "@/lib/utils";
 export function Logo({
   className,
   compact = false,
+  subtitle = "Hospitality Platform",
 }: {
   className?: string;
   compact?: boolean;
+  subtitle?: string;
 }) {
   return (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div className={cn("flex items-center gap-2.5", className)}>
       <img
         src={logoImg}
         alt="StayEase Logo"
-        className="size-11 shrink-0 rounded-2xl object-cover shadow-soft ring-1 ring-black/10"
+        className="size-9 shrink-0 rounded-lg object-cover ring-1 ring-border shadow-2xs"
       />
       {!compact && (
         <div className="min-w-0 leading-tight">
-          <p className="truncate font-display text-base font-semibold">StayEase</p>
-          <p className="truncate text-[11px] uppercase tracking-[0.18em] text-gold-foreground/70">
-            Staff Portal
+          <p className="truncate font-display text-base font-bold tracking-tight text-foreground">
+            StayEase
+          </p>
+          <p className="truncate text-[10px] font-mono font-medium uppercase tracking-wider text-muted-foreground">
+            {subtitle}
           </p>
         </div>
       )}

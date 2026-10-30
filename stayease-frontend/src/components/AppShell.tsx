@@ -309,8 +309,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
             <div className="flex shrink-0 items-center gap-2">
               <div className="mr-1 hidden text-right lg:block">
-                <p className="text-sm font-semibold tabular-nums">
-                  {clock ? clock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "--:--"}
+                <p className="text-xs font-mono font-bold tabular-nums text-foreground">
+                  {clock ? clock.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "00:00"}
                 </p>
                 <p className="text-[11px] text-muted-foreground">
                   {clock

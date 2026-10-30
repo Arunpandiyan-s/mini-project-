@@ -17,11 +17,11 @@ function ProfilePage() {
   const initials = (session?.name ?? "ST").split(" ").map((p) => p[0]).join("").slice(0, 2);
 
   const rows = [
-    { label: "Employee ID", value: session?.employeeId ?? "—" },
-    { label: "Phone", value: session?.phone ?? "—" },
-    { label: "Email", value: session?.email ?? "—" },
+    { label: "Employee ID", value: session?.employeeId ?? "Not assigned" },
+    { label: "Phone", value: session?.phone ?? "Not specified" },
+    { label: "Email", value: session?.email ?? "Not specified" },
     { label: "Department", value: roleName(session?.role) },
-    { label: "Shift", value: session?.shift ?? "—" },
+    { label: "Shift", value: session?.shift ?? "Standard Shift" },
   ];
 
   return (

@@ -193,10 +193,10 @@ export function TaskCard({ task }: { task: Task }) {
           if (!alarmTriggered.current) {
             alarmTriggered.current = true;
             startRepeatingAlarm(); // Start continuous alarm chime loop!
-            toast.error(`⏰ 1 min timer ended for Room ${task.room}! Ringing until Completed.`, {
+            toast.error(`Timer ended for Room ${task.room}: ringing until completed.`, {
               duration: 15000,
             });
-            pushActivity(`Timer ended for Room ${task.room} — alarm ringing until completed`);
+            pushActivity(`Timer ended for Room ${task.room}: alarm ringing until completed`);
           }
           return 0;
         }
@@ -296,7 +296,7 @@ export function TaskCard({ task }: { task: Task }) {
     const msgText = reportMessage.trim() ? ` | Note: "${reportMessage.trim()}"` : "";
 
     pushActivity(
-      `Completed Room ${task.room} — Condition: ${conditionText}${msgText}${voiceText}${photoText} → Report transferred to Manager`
+      `Completed Room ${task.room}: Condition ${conditionText}${msgText}${voiceText}${photoText} -> Report transferred to Manager`
     );
 
     toast.success(
@@ -314,7 +314,7 @@ export function TaskCard({ task }: { task: Task }) {
     setTaskStatus(task.id, "Attention Needed");
     setTimerActive(false);
     setHelpDialogOpen(false);
-    pushActivity(`Help requested for Room ${task.room} — Transferred to another staff member`);
+    pushActivity(`Help requested for Room ${task.room}: transferred to another staff member`);
     toast.warning("Task moved to another housekeeping member. You must see the Manager.", {
       duration: 8000,
     });
@@ -327,37 +327,39 @@ export function TaskCard({ task }: { task: Task }) {
   };
 
   return (
-    <article className="surface flex flex-col gap-4 p-4 sm:p-5 transition-shadow hover:shadow-lift w-full">
+    <article className="rounded-xl border border-border bg-card flex flex-col gap-3.5 p-4 sm:p-5 transition-all hover:border-border/80 hover:shadow-soft w-full">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Room Number: {task.room || (task as any).RoomNumber}
+          <p className="text-[10px] font-mono font-semibold uppercase tracking-wider text-muted-foreground">
+            Unit Designation
           </p>
-          <p className="truncate font-display text-2xl sm:text-3xl font-bold leading-tight">
+          <p className="truncate font-mono text-xl sm:text-2xl font-extrabold text-foreground tracking-tight leading-tight mt-0.5">
             Room {task.room || (task as any).RoomNumber}
           </p>
-          <p className="mt-1 truncate text-xs sm:text-sm font-medium text-foreground/80">
+          <p className="mt-1 truncate text-xs sm:text-sm font-semibold text-foreground/90">
             {task.type || (task as any).CleaningType}
           </p>
         </div>
-        <div className="flex shrink-0 flex-col items-end gap-1.5 sm:gap-2">
+        <div className="flex shrink-0 flex-col items-end gap-1.5">
           <PriorityBadge priority={task.priority || (task as any).Priority} />
           <StatusBadge status={task.status || (task as any).Status} />
         </div>
       </div>
 
       {task.description && (
-        <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">{task.description}</p>
+        <p className="text-xs leading-relaxed text-muted-foreground">{task.description}</p>
       )}
 
-      <div className="flex flex-col gap-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2.5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between pt-2 border-t border-border/60">
         <div className="flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-1.5">
-            <Clock className="size-3.5 shrink-0" /> Assigned: {task.assignedAt || (task as any).AssignedTime}
+          <span className="inline-flex items-center gap-1.5 font-mono text-[11px]">
+            <Clock className="size-3.5 shrink-0 text-muted-foreground" />
+            <span>Assigned: {task.assignedAt || (task as any).AssignedTime}</span>
           </span>
           {task.eta && (
-            <span className="inline-flex items-center gap-1.5">
-              <Timer className="size-3.5 shrink-0" /> Est. {task.eta}
+            <span className="inline-flex items-center gap-1.5 font-mono text-[11px]">
+              <Timer className="size-3.5 shrink-0 text-muted-foreground" />
+              <span>Est: {task.eta}</span>
             </span>
           )}
         </div>
@@ -365,48 +367,56 @@ export function TaskCard({ task }: { task: Task }) {
         {/* 1-minute live countdown timer badge */}
         {secondsLeft !== null && task.status === "In Progress" && (
           <div
-            className={`inline-flex w-fit items-center gap-2 rounded-xl px-3 py-1.5 font-bold transition-all ${
+            className={`inline-flex w-fit items-center gap-2 rounded-md border px-2.5 py-1 text-xs font-mono font-bold transition-all ${
               secondsLeft === 0
-                ? "bg-destructive text-destructive-foreground animate-bounce"
-                : "bg-primary-soft text-accent-foreground animate-pulse"
+                ? "bg-rose-500/15 border-rose-500/30 text-rose-700 dark:text-rose-300 animate-pulse"
+                : "bg-primary/10 border-primary/25 text-primary"
             }`}
           >
-            {secondsLeft === 0 ? <BellRing className="size-4 shrink-0" /> : <Timer className="size-4 shrink-0 text-primary" />}
+            {secondsLeft === 0 ? (
+              <BellRing className="size-3.5 shrink-0" />
+            ) : (
+              <Timer className="size-3.5 shrink-0 text-primary" />
+            )}
             <span>Timer: {formatTime(secondsLeft)}</span>
-            {secondsLeft === 0 && <span>· RINGING...</span>}
+            {secondsLeft === 0 && <span className="font-sans font-bold">· Alarm</span>}
           </div>
         )}
       </div>
 
       {/* Action Buttons: Start / Complete + Need Help */}
-      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 pt-1">
         {task.status === "Pending" || task.status === "Attention Needed" ? (
-          <Button className="h-12 w-full rounded-xl text-sm font-semibold" onClick={handleStart}>
-            <Play className="size-4 shrink-0" /> <span className="truncate">Start</span>
+          <Button
+            className="h-10 w-full rounded-lg text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 shadow-2xs"
+            onClick={handleStart}
+          >
+            <Play className="size-3.5 shrink-0" /> <span className="truncate">Start Task</span>
           </Button>
         ) : task.status === "In Progress" ? (
           <Button
-            className="h-12 w-full rounded-xl border-success/40 bg-success/15 text-success hover:bg-success/25 font-semibold text-sm"
+            className="h-10 w-full rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/20 font-bold text-xs shadow-2xs"
             onClick={handleOpenCompleteReport}
           >
-            <Check className="size-4 shrink-0" /> <span className="truncate">Complete</span>
+            <Check className="size-3.5 shrink-0" /> <span className="truncate">Complete and Report</span>
           </Button>
         ) : (
           <Button
-            variant="secondary"
-            className="h-12 w-full rounded-xl font-semibold text-sm text-muted-foreground"
+            variant="outline"
+            className="h-10 w-full rounded-lg border-emerald-500/30 bg-emerald-500/5 text-emerald-700 dark:text-emerald-300 font-bold text-xs"
             disabled
           >
-            <Check className="size-4 shrink-0" /> <span className="truncate">Completed</span>
+            <Check className="size-3.5 shrink-0" /> <span className="truncate">Task Finished</span>
           </Button>
         )}
 
         <Button
           variant="outline"
-          className="h-12 w-full rounded-xl border-destructive/40 text-xs sm:text-sm font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive"
+          className="h-10 w-full rounded-lg text-xs font-semibold border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30"
           onClick={handleNeedHelpClick}
+          disabled={task.status === "Completed"}
         >
-          <HelpCircle className="size-4 shrink-0" /> <span className="truncate">Need Help</span>
+          <HelpCircle className="size-3.5 shrink-0" /> <span className="truncate">Request Reassignment</span>
         </Button>
       </div>
 

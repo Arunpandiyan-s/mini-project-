@@ -19,9 +19,9 @@ export function BottomNav({
   return (
     <nav
       aria-label="Main navigation"
-      className="fixed inset-x-0 bottom-0 md:bottom-6 z-40 mx-auto max-w-md md:max-w-lg border-t md:border border-border bg-card/95 px-2 md:px-4 pb-[env(safe-area-inset-bottom)] md:pb-0 md:rounded-full backdrop-blur md:shadow-2xl transition-all"
+      className="fixed inset-x-0 bottom-0 md:bottom-5 z-40 mx-auto max-w-sm md:max-w-md border-t md:border border-border/80 bg-card/90 px-3 pb-[env(safe-area-inset-bottom)] md:pb-0 md:rounded-2xl backdrop-blur-md md:shadow-lift transition-all"
     >
-      <ul className="flex items-stretch justify-between">
+      <ul className="flex items-stretch justify-between py-1.5 md:py-1">
         {items.map((item) => {
           const isActive = active === item.key;
           return (
@@ -30,11 +30,13 @@ export function BottomNav({
                 type="button"
                 onClick={() => onSelect(item.key)}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex w-full flex-col items-center gap-1 py-3 text-[11px] font-semibold transition ${
-                  isActive ? "text-primary" : "text-muted-foreground"
+                className={`flex w-full flex-col items-center gap-1 py-1.5 rounded-xl text-[11px] font-semibold transition-all ${
+                  isActive
+                    ? "text-primary font-bold bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <item.icon className="h-5 w-5" />
+                <item.icon className="size-4 shrink-0" />
                 {item.label}
               </button>
             </li>

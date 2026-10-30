@@ -349,7 +349,7 @@ export function MaintenanceDashboard() {
           <DialogHeader>
             <DialogTitle>New maintenance assignment</DialogTitle>
             <DialogDescription>
-              Room {assignmentTicket?.room ?? "—"} — {assignmentTicket?.issue ?? "No ticket available"}
+              Room {assignmentTicket?.room ?? "Unassigned"}: {assignmentTicket?.issue ?? "No ticket available"}
             </DialogDescription>
           </DialogHeader>
 

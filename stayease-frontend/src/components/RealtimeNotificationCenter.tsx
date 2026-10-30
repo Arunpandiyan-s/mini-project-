@@ -178,11 +178,11 @@ export function RealtimeNotificationCenter() {
               className="h-11 px-3 rounded-xl border border-border bg-card text-foreground text-xs font-bold focus:outline-none"
             >
               <option value="All">All Statuses</option>
-              <option value="New">New / Active ⚡</option>
-              <option value="Accepted">Accepted 🟢</option>
-              <option value="Pending">Pending ⏰</option>
-              <option value="Completed">Completed ✅</option>
-              <option value="Rejected">Rejected ❌</option>
+              <option value="New">New / Active</option>
+              <option value="Accepted">Accepted</option>
+              <option value="Pending">Pending</option>
+              <option value="Completed">Completed</option>
+              <option value="Rejected">Rejected</option>
             </select>
 
             <select
@@ -191,8 +191,8 @@ export function RealtimeNotificationCenter() {
               className="h-11 px-3 rounded-xl border border-border bg-card text-foreground text-xs font-bold focus:outline-none"
             >
               <option value="All">All Priorities</option>
-              <option value="Emergency">Emergency 🔥</option>
-              <option value="High">High ⚡</option>
+              <option value="Emergency">Emergency</option>
+              <option value="High">High</option>
               <option value="Medium">Medium</option>
               <option value="Low">Low</option>
             </select>
@@ -203,12 +203,12 @@ export function RealtimeNotificationCenter() {
               className="h-11 px-3 rounded-xl border border-border bg-card text-foreground text-xs font-bold focus:outline-none"
             >
               <option value="All">All Source Depts</option>
-              <option value="Guest / Customer">Guest / Customer 🛎️</option>
-              <option value="Housekeeping">Housekeeping 🧹</option>
-              <option value="Maintenance">Maintenance 🛠️</option>
-              <option value="Food & Beverage">Food & Beverage 🍽️</option>
-              <option value="Security">Security 🛡️</option>
-              <option value="Hotel Manager">Hotel Manager 👔</option>
+              <option value="Guest / Customer">Guest / Customer</option>
+              <option value="Housekeeping">Housekeeping</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Food & Beverage">Food & Beverage</option>
+              <option value="Security">Security</option>
+              <option value="Hotel Manager">Hotel Manager</option>
             </select>
           </div>
         </div>
@@ -236,16 +236,36 @@ export function RealtimeNotificationCenter() {
               if (req.status === "New" || req.status === "Pending") {
                 if (elapsedSec >= 120) {
                   escalationClass = "border-destructive bg-destructive/10 ring-2 ring-destructive/40 animate-pulse";
-                  escalationBadge = <span className="text-[10px] font-extrabold text-destructive px-2 py-0.5 rounded-full bg-destructive/20">🔥 120s Auto-Escalated Emergency</span>;
+                  escalationBadge = (
+                    <span className="text-[10px] font-bold text-destructive px-2 py-0.5 rounded-md bg-destructive/15 border border-destructive/30 inline-flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-destructive animate-ping" />
+                      120s Auto-Escalated Emergency
+                    </span>
+                  );
                 } else if (elapsedSec >= 90) {
                   escalationClass = "border-rose-600 bg-rose-600/10";
-                  escalationBadge = <span className="text-[10px] font-extrabold text-rose-600 px-2 py-0.5 rounded-full bg-rose-600/20">🚨 90s Manager Alert</span>;
+                  escalationBadge = (
+                    <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 px-2 py-0.5 rounded-md bg-rose-500/15 border border-rose-500/30 inline-flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-rose-500" />
+                      90s Manager Alert
+                    </span>
+                  );
                 } else if (elapsedSec >= 60) {
                   escalationClass = "border-orange-500 bg-orange-500/10";
-                  escalationBadge = <span className="text-[10px] font-extrabold text-orange-600 px-2 py-0.5 rounded-full bg-orange-500/20">🟠 60s Escalation</span>;
+                  escalationBadge = (
+                    <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 px-2 py-0.5 rounded-md bg-orange-500/15 border border-orange-500/30 inline-flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-orange-500" />
+                      60s Escalation
+                    </span>
+                  );
                 } else if (elapsedSec >= 30) {
                   escalationClass = "border-amber-400 bg-amber-400/10";
-                  escalationBadge = <span className="text-[10px] font-extrabold text-amber-700 px-2 py-0.5 rounded-full bg-amber-400/20">🟡 30s Warning</span>;
+                  escalationBadge = (
+                    <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 inline-flex items-center gap-1.5">
+                      <span className="size-1.5 rounded-full bg-amber-500" />
+                      30s Warning
+                    </span>
+                  );
                 }
               }
 
@@ -253,18 +273,18 @@ export function RealtimeNotificationCenter() {
                 <div key={req.id} className={cn("p-4 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 border-l-4", escalationClass)}>
                   <div className="space-y-1.5 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-extrabold text-sm text-foreground">{req.id}</span>
-                      <span className="px-2.5 py-0.5 rounded-full bg-primary-soft text-accent-foreground font-extrabold text-xs">
-                        Room {req.roomNumber}
+                      <span className="font-mono font-bold text-xs text-muted-foreground">{req.id}</span>
+                      <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/25 font-mono font-bold text-xs tracking-tight">
+                        ROOM {req.roomNumber}
                       </span>
                       <span className={cn(
-                        "px-2.5 py-0.5 rounded-full text-xs font-bold",
-                        req.priority === "Emergency" ? "bg-destructive text-white" :
-                        req.priority === "High" ? "bg-orange-500 text-white" : "bg-muted text-foreground"
+                        "px-2 py-0.5 rounded-md text-xs font-bold border",
+                        req.priority === "Emergency" ? "bg-destructive/15 text-destructive border-destructive/30" :
+                        req.priority === "High" ? "bg-orange-500/15 text-orange-700 dark:text-orange-400 border-orange-500/30" : "bg-muted text-foreground border-border"
                       )}>
                         {req.priority}
                       </span>
-                      <span className="text-[10px] uppercase font-bold text-muted-foreground border px-2 py-0.5 rounded-md">
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground border border-border px-2 py-0.5 rounded-md">
                         {req.department}
                       </span>
                       {escalationBadge}
@@ -349,7 +369,7 @@ export function RealtimeNotificationCenter() {
                 </span>
                 <div>
                   <DialogTitle className="font-display text-xl font-bold text-foreground">
-                    {activePopupRequest.priority === "Emergency" ? "🚨 EMERGENCY REQUEST RECEIVED!" : "⚡ HIGH PRIORITY INCOMING REQUEST!"}
+                    {activePopupRequest.priority === "Emergency" ? "Emergency Request Received" : "High Priority Incoming Request"}
                   </DialogTitle>
                   <DialogDescription className="text-xs font-bold text-amber-600 dark:text-amber-400">
                     Continuous Alarm Active · Requires Receptionist Acceptance to Stop Sound
@@ -359,17 +379,17 @@ export function RealtimeNotificationCenter() {
             </DialogHeader>
 
             <div className="space-y-4 pt-2">
-              <div className="p-4 rounded-2xl bg-muted/60 border border-border space-y-2 text-xs">
+              <div className="p-4 rounded-xl bg-muted/60 border border-border space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-base text-foreground">{activePopupRequest.id}</span>
-                  <span className="px-3 py-1 rounded-full bg-primary-soft font-extrabold text-xs text-primary">
-                    Room {activePopupRequest.roomNumber}
+                  <span className="font-mono font-bold text-sm text-foreground">{activePopupRequest.id}</span>
+                  <span className="px-2.5 py-0.5 rounded-md bg-primary/10 border border-primary/25 font-mono font-bold text-xs text-primary">
+                    ROOM {activePopupRequest.roomNumber}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-[11px] pt-1">
                   <p className="font-bold text-muted-foreground">Department: <span className="text-foreground">{activePopupRequest.department}</span></p>
-                  <p className="font-bold text-muted-foreground">Priority: <span className="text-destructive font-bold">{activePopupRequest.priority} 🔥</span></p>
+                  <p className="font-bold text-muted-foreground">Priority: <span className="text-destructive font-bold">{activePopupRequest.priority}</span></p>
                   <p className="font-bold text-muted-foreground">Type: <span className="text-foreground">{activePopupRequest.type}</span></p>
                   <p className="font-bold text-muted-foreground">Guest: <span className="text-foreground">{activePopupRequest.guestName || "N/A"}</span></p>
                 </div>
@@ -458,11 +478,11 @@ export function RealtimeNotificationCenter() {
               onChange={(e) => setForwardDept(e.target.value)}
               className="w-full h-11 px-3 rounded-xl border border-border bg-card text-xs font-bold"
             >
-              <option value="Housekeeping">Housekeeping 🧹</option>
-              <option value="Maintenance">Maintenance 🛠️</option>
-              <option value="Food & Beverage">Food & Beverage 🍽️</option>
-              <option value="Security">Security 🛡️</option>
-              <option value="Manager">Hotel Manager 👔</option>
+              <option value="Housekeeping">Housekeeping</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Food & Beverage">Food & Beverage</option>
+              <option value="Security">Security</option>
+              <option value="Manager">Hotel Manager</option>
             </select>
             <Button
               className="w-full h-11 rounded-xl font-bold"

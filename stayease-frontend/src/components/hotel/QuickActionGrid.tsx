@@ -86,7 +86,7 @@ const actions: Action[] = [
   {
     label: "Other Request",
     icon: ConciergeBell,
-    hint: "Any other request not listed above — describe your need.",
+    hint: "Any other request not listed above: describe your specific need.",
     requestType: "other",
   },
 ];
@@ -151,7 +151,7 @@ export function QuickActionGrid({ onRequestCreated, selectedRoomNumber }: QuickA
             onClick={() => {
               if (!action.disabled) setActive(action);
             }}
-            className={`card-surface flex min-h-[104px] flex-col items-start gap-2 p-4 text-left transition active:scale-[0.98] ${
+            className={`rounded-xl border border-border bg-card flex min-h-[104px] flex-col items-start gap-2 p-3.5 text-left transition hover:border-primary/40 hover:shadow-soft active:scale-[0.98] ${
               action.disabled ? "opacity-40 cursor-not-allowed" : ""
             }`}
           >

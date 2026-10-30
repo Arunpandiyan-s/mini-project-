@@ -52,7 +52,7 @@ export const guest = {
 export const initialRequests: GuestRequest[] = [
   { id: "r1", type: "Extra Towels", submitted: "Today · 09:12", status: "completed" },
   { id: "r2", type: "Housekeeping", submitted: "Today · 08:40", status: "progress" },
-  { id: "r3", type: "Maintenance — AC noise", submitted: "Yesterday · 21:05", status: "attention" },
+  { id: "r3", type: "Maintenance: AC noise", submitted: "Yesterday · 21:05", status: "attention" },
   { id: "r4", type: "Laundry Pickup", submitted: "Yesterday · 18:20", status: "pending" },
   { id: "r5", type: "Wake-Up Call · 06:30", submitted: "Yesterday · 22:10", status: "completed" },
   { id: "r6", type: "Food Order · Club Sandwich", submitted: "13 Aug · 13:45", status: "completed" },
