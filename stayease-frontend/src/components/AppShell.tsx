@@ -131,10 +131,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   const refreshTasks = useCallback(async () => {
     try {
       const apiFetch = await import("@/lib/api");
-      const isAdmin = session?.role === "manager";
-      const data = isAdmin
-        ? await apiFetch.getTasks()
-        : await apiFetch.getMyTasks();
+      let data: Record<string, unknown>[] = [];
+      try {
+        data = (await apiFetch.getTasks()) as Record<string, unknown>[];
+      } catch {
+        data = (await apiFetch.getMyTasks().catch(() => [])) as Record<string, unknown>[];
+      }
+
       setTasks(data.map((t: Record<string, unknown>) => ({
         id: String(t.task_id ?? t.id ?? ""),
         room: String(t.room_number ?? (t.room ? (t.room as any).room_number || t.room : t.room_id) ?? ""),

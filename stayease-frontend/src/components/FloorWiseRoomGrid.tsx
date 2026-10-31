@@ -28,8 +28,9 @@ import { ForceCheckoutModal } from "@/components/ForceCheckoutModal";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useApp } from "@/lib/store";
-import type { Room, RoomStatus } from "@/lib/data";
+import type { Room, RoomStatus, Task } from "@/lib/data";
 import { Button } from "@/components/ui/button";
+
 import {
   Dialog,
   DialogContent,
@@ -181,7 +182,9 @@ export function FloorWiseRoomGrid() {
     pushActivity,
     triggerN8nWebhook,
     reservations,
+    setTasks,
   } = useApp();
+
 
   useEffect(() => {
     listRooms().then((apiRooms) => {
@@ -313,15 +316,31 @@ export function FloorWiseRoomGrid() {
     setRoomStatus(roomNum, "Maintenance");
     toast.warning(`Room ${roomNum} reported for maintenance.`);
     pushActivity(`Room ${roomNum} placed under maintenance.`);
+
+    const newMaintTask: Task = {
+      id: `T-MN-${roomNum}-${Date.now().toString().slice(-4)}`,
+      room: roomNum,
+      type: "Maintenance Defect",
+      role: "maintenance",
+      priority: "High",
+      assignedTo: "Marcus Torres",
+      assignedAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      eta: "45 min",
+      description: `Defect reported for Room ${roomNum}. Inspection & repair required.`,
+      status: "Pending",
+    };
+    setTasks((prev) => [newMaintTask, ...prev]);
+
     import("@/lib/api").then(({ reportRoomMaintenance }) => {
       void reportRoomMaintenance(roomNum, {
-        issue_description: "Reported defect requiring maintenance attention",
+        issue: `Defect reported for Room ${roomNum}. Inspection & repair required.`,
         priority: "high",
-        block_occupancy: true,
+        blocks_occupancy: true,
       }).catch(() => {});
     });
     void triggerN8nWebhook("room_status_changed", { roomNumber: roomNum, status: "Maintenance" });
   };
+
 
   const handleCheckIn = (roomNum: string) => {
     const res = reservations.find((r) => r.room === roomNum);

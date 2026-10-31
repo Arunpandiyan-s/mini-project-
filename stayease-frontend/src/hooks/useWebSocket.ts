@@ -78,6 +78,7 @@ export function useStaffWebSocket(
     reg("task.started", handlers.onTaskUpdated);
     reg("task.completed", handlers.onTaskUpdated);
     reg("guest_request.created", handlers.onGuestRequestCreated);
+
     reg("guest_request.cancelled", handlers.onGuestRequestCancelled);
     reg("reservation.created", handlers.onReservationCreated);
     reg("reservation.checked_in", handlers.onReservationCheckedIn);

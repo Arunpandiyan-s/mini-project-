@@ -29,6 +29,7 @@ import {
   Power,
   ShieldAlert,
   Lock,
+  Wrench,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SectionHeader, StatCard } from "@/components/Primitives";
@@ -44,7 +45,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useApp } from "@/lib/store";
+import type { Task, Priority } from "@/lib/data";
 import { RoomGrid } from "@/components/RoomGrid";
+
 import { FloorWiseRoomGrid } from "@/components/FloorWiseRoomGrid";
 import { OperationsMonitoringPanel } from "@/components/OperationsMonitoringPanel";
 import { RealtimeNotificationCenter } from "@/components/RealtimeNotificationCenter";
@@ -237,6 +240,194 @@ function NewBookingModal() {
     </Dialog>
   );
 }
+
+/* ─── BOOK & DISPATCH MAINTENANCE MODAL ────────────────────────────── */
+function BookMaintenanceModal() {
+  const { rooms, setTasks, setRoomStatus, pushActivity } = useApp();
+  const [open, setOpen] = useState(false);
+  const [roomNumber, setRoomNumber] = useState("");
+  const [issueType, setIssueType] = useState("Air Conditioning / HVAC");
+  const [priority, setPriority] = useState<Priority>("High");
+  const [assignedTechnician, setAssignedTechnician] = useState("Marcus Torres");
+  const [description, setDescription] = useState("");
+  const [blocksOccupancy, setBlocksOccupancy] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!roomNumber.trim()) {
+      toast.error("Please select or enter a room number.");
+      return;
+    }
+
+    setSubmitting(true);
+    const taskId = `T-MN-${roomNumber}-${Date.now().toString().slice(-4)}`;
+    const fullDesc = description.trim() || `${issueType} reported by Receptionist`;
+
+    const newMaintTask: Task = {
+      id: taskId,
+      room: roomNumber,
+      type: issueType,
+      role: "maintenance",
+      priority: priority,
+      assignedTo: assignedTechnician,
+      assignedAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      eta: "30 min",
+      description: fullDesc,
+      status: "Pending",
+    };
+
+    setTasks((prev) => [newMaintTask, ...prev]);
+    if (blocksOccupancy) {
+      setRoomStatus(roomNumber, "Maintenance");
+    }
+
+    try {
+      const { reportRoomMaintenance } = await import("@/lib/api");
+      await reportRoomMaintenance(roomNumber, {
+        issue: `${issueType}: ${fullDesc}`,
+        priority: priority.toLowerCase(),
+        blocks_occupancy: blocksOccupancy,
+      });
+      toast.success(`Maintenance booked for Room ${roomNumber}! Dispatched to ${assignedTechnician}.`);
+    } catch {
+      toast.success(`Maintenance task created locally for Room ${roomNumber}.`);
+    }
+
+    pushActivity(`Reception booked maintenance for Room ${roomNumber}: ${issueType} (${assignedTechnician})`);
+    setSubmitting(false);
+    setOpen(false);
+    setRoomNumber("");
+    setDescription("");
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          size="lg"
+          variant="outline"
+          onClick={() => setOpen(true)}
+          className="h-13 px-6 rounded-2xl font-bold text-base border-amber-500/40 text-amber-700 dark:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 shadow-sm flex items-center gap-2"
+        >
+          <Wrench className="size-5 text-amber-500" /> Book Maintenance
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl p-6 bg-card border-border shadow-2xl">
+        <DialogHeader>
+          <DialogTitle className="font-display text-2xl font-bold flex items-center gap-2 text-foreground">
+            <Wrench className="size-6 text-amber-500" />
+            Book & Dispatch Maintenance
+          </DialogTitle>
+          <DialogDescription className="text-xs">
+            Log a maintenance defect or room issue. Immediately dispatches to the maintenance staff dashboard.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+          <div className="space-y-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Room Number *</label>
+            <select
+              value={roomNumber}
+              onChange={(e) => setRoomNumber(e.target.value)}
+              required
+              className="w-full h-11 px-3 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="">Select a room</option>
+              {rooms.map((r) => (
+                <option key={r.number} value={r.number}>
+                  Room {r.number} (Floor {r.floor} · {r.status})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Issue Type</label>
+              <select
+                value={issueType}
+                onChange={(e) => setIssueType(e.target.value)}
+                className="w-full h-11 px-3 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="Air Conditioning / HVAC">Air Conditioning / HVAC</option>
+                <option value="Plumbing / Water Leak">Plumbing / Water Leak</option>
+                <option value="Electrical / Lighting">Electrical / Lighting</option>
+                <option value="Door Lock / Keycard Fault">Door Lock / Keycard Fault</option>
+                <option value="TV / Audio / Controls">TV / Audio / Controls</option>
+                <option value="Furniture / Fixtures">Furniture / Fixtures</option>
+                <option value="Urgent General Defect">Urgent General Defect</option>
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Priority</label>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value as Priority)}
+                className="w-full h-11 px-3 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="Urgent">Urgent (Immediate)</option>
+                <option value="High">High Priority</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Assigned Technician</label>
+            <select
+              value={assignedTechnician}
+              onChange={(e) => setAssignedTechnician(e.target.value)}
+              className="w-full h-11 px-3 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="Marcus Torres">Marcus Torres (On Duty · Lead Engineer)</option>
+              <option value="David Miller">David Miller (Electrical Tech)</option>
+              <option value="Vijay Singh">Vijay Singh (Plumbing Specialist)</option>
+              <option value="Ravi Kumar">Ravi Kumar (HVAC)</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-3 pt-1">
+            <input
+              type="checkbox"
+              checked={blocksOccupancy}
+              onChange={(e) => setBlocksOccupancy(e.target.checked)}
+              className="size-4 rounded"
+              id="maint-blocks-occ"
+            />
+            <label htmlFor="maint-blocks-occ" className="text-xs font-semibold text-foreground">
+              Block room occupancy (sets status to Maintenance)
+            </label>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Defect Description / Notes</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              placeholder="Provide defect details (e.g., AC blowing warm air, faucet dripping in bathroom)..."
+              className="w-full px-3 py-2 rounded-xl border border-border bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none text-foreground"
+            />
+          </div>
+
+          <div className="flex gap-2 pt-2">
+            <Button type="button" variant="secondary" className="flex-1 h-12 rounded-xl font-bold" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={submitting} className="flex-1 h-12 rounded-xl font-bold text-base bg-amber-600 hover:bg-amber-700 text-white gap-2">
+              <Wrench className="size-4" /> {submitting ? "Dispatching..." : "Dispatch Maintenance"}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
 /* ─── PRE-REGISTRATION APPROVALS ───────────────────────────────────── */
 function PreRegistrationPanel() {
@@ -838,13 +1029,17 @@ export function ReceptionDashboard() {
           <TabsContent value="overview" className="space-y-6">
             <div className="surface p-6 flex flex-col sm:flex-row items-center justify-between gap-4 hero-gradient">
               <div>
-                <h3 className="text-xl font-bold text-foreground">Offline & Walk-In Bookings</h3>
+                <h3 className="text-xl font-bold text-foreground">Offline Bookings & Maintenance Dispatch</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Click below to create an immediate offline booking for walk-in guests or phone reservations.
+                  Create offline bookings for walk-ins or log maintenance defects with real-time dispatch to technicians.
                 </p>
               </div>
-              <NewBookingModal />
+              <div className="flex flex-wrap items-center gap-3">
+                <BookMaintenanceModal />
+                <NewBookingModal />
+              </div>
             </div>
+
             <PreRegistrationPanel />
             <RealtimeNotificationCenter />
           </TabsContent>

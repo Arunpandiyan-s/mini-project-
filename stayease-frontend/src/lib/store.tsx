@@ -680,6 +680,40 @@ export function AppProvider({ children }: { children: ReactNode }) {
     void triggerN8nWebhook("attendance_signin", { Attendance: log });
   };
 
+  const combinedTickets = useMemo(() => {
+    const fromTasks: Ticket[] = tasks
+      .filter((t) => t.role === "maintenance")
+      .map((t) => {
+        let ticketStatus: Ticket["status"] = "Open";
+        if (t.status === "In Progress") ticketStatus = "In Progress";
+        else if (t.status === "Completed") ticketStatus = "Completed";
+        else if (t.status === "Attention Needed" || t.status === "Delayed") ticketStatus = "Escalated";
+
+        return {
+          id: t.id,
+          room: t.room,
+          issue: t.type || t.description || "Room Defect",
+          technician: t.assignedTo || "Marcus Torres",
+          reportedAt: t.assignedAt || "Today",
+          eta: t.eta || "30 min",
+          parts: "Inspection / Repair kit",
+          notes: t.description || t.type,
+          priority: t.priority || "High",
+          openedMinutes: 10,
+          status: ticketStatus,
+        };
+      });
+
+    const map = new Map<string, Ticket>();
+    tickets.forEach((t) => map.set(t.id, t));
+    fromTasks.forEach((t) => {
+      if (!map.has(t.id)) {
+        map.set(t.id, t);
+      }
+    });
+    return Array.from(map.values());
+  }, [tasks, tickets]);
+
   const value = useMemo<AppState>(
     () => ({
       selectedRole,
@@ -749,13 +783,43 @@ export function AppProvider({ children }: { children: ReactNode }) {
       orders,
       setOrderStatus: (id, status) =>
         setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o))),
-      tickets,
-      setTicketStatus: (id, status, technician) =>
-        setTickets((prev) =>
-          prev.map((t) =>
-            t.id === id ? { ...t, status, ...(technician ? { technician } : {}) } : t,
-          ),
-        ),
+      tickets: combinedTickets,
+      setTicketStatus: (id, status, technician) => {
+        setTickets((prev) => {
+          const exists = prev.some((t) => t.id === id);
+          if (exists) {
+            return prev.map((t) => (t.id === id ? { ...t, status, ...(technician ? { technician } : {}) } : t));
+          }
+          const taskObj = tasks.find((t) => t.id === id);
+          const newTicket: Ticket = {
+            id,
+            room: taskObj?.room || "101",
+            issue: taskObj?.type || taskObj?.description || "Maintenance Issue",
+            technician: technician || taskObj?.assignedTo || "Marcus Torres",
+            reportedAt: taskObj?.assignedAt || "Today",
+            eta: taskObj?.eta || "30 min",
+            parts: "Inspection kit",
+            notes: taskObj?.description || "",
+            priority: taskObj?.priority || "High",
+            openedMinutes: 10,
+            status,
+          };
+          return [newTicket, ...prev];
+        });
+
+        const mappedTaskStatus: TaskStatus =
+          status === "In Progress"
+            ? "In Progress"
+            : status === "Completed"
+            ? "Completed"
+            : status === "Escalated"
+            ? "Attention Needed"
+            : "Pending";
+        setTasks((prev) =>
+          prev.map((t) => (t.id === id ? { ...t, status: mappedTaskStatus, ...(technician ? { assignedTo: technician } : {}) } : t))
+        );
+      },
+
       staff,
       addStaff: (s) => {
         setStaff((prev) => [s, ...prev]);
@@ -1218,6 +1282,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
         };
         setNotifications((prev) => [notif, ...prev]);
 
+        if (newTask.role === "maintenance") {
+          setRooms((prev) =>
+prev.map((r) => (r.number === taskData.room ? { ...r, status: "Maintenance" } : r))
+          );
+          import("@/lib/api").then(({ reportRoomMaintenance }) => {
+            void reportRoomMaintenance(taskData.room, {
+              issue: taskData.description || taskData.type,
+              priority: String(aiPriority).toLowerCase(),
+              blocks_occupancy: true,
+                        }).catch(() => {});
+          });
+        }
+
         if (newTask.role === "reception") {
           setNewReceptionTaskAlert(newTask);
         }
@@ -1225,6 +1302,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         void triggerN8nWebhook("task_assigned", { Task: newTask, Notification: notif });
         toast.success(`Task ${taskId} auto-assigned to ${autoAssignedStaff}!`);
       },
+
       updateTaskPriority: (taskId, priority) => {
         console.log("API CALL: PATCH /api/tasks/" + taskId, { priority });
         setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, priority } : t)));
@@ -1525,9 +1603,37 @@ export function AppProvider({ children }: { children: ReactNode }) {
         );
         pushAudit("Request Forwarded", `Request ${id} forwarded to ${targetDept}`);
         emitRequestBackendEvent("request.forwarded", { id, status: "Forwarded", forwardedTo: targetDept });
+
+        if (targetDept.toLowerCase().includes("maint")) {
+          const req = realtimeRequests.find((r) => r.id === id);
+          if (req) {
+            const maintTask: Task = {
+              id: `T-MN-${req.roomNumber}-${Date.now().toString().slice(-4)}`,
+              room: req.roomNumber,
+              type: req.type || "Maintenance Request",
+              role: "maintenance",
+              priority: req.priority === "Emergency" || req.priority === "High" ? "Urgent" : "Medium",
+              assignedTo: "Marcus Torres",
+              assignedAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+              eta: "30 min",
+              description: req.description || `Guest request for Room ${req.roomNumber}`,
+              status: "Pending",
+            };
+            setTasks((prev) => [maintTask, ...prev]);
+            import("@/lib/api").then(({ reportRoomMaintenance }) => {
+              void reportRoomMaintenance(req.roomNumber, {
+                issue: req.description || req.type || "Maintenance Request",
+                priority: req.priority.toLowerCase(),
+                blocks_occupancy: true,
+              }).catch(() => {});
+            });
+          }
+        }
+
         toast.info(`Request ${id} forwarded to ${targetDept}.`);
         void triggerN8nWebhook("request_forwarded", { id, targetDept });
       },
+
       markPendingRealtimeRequest: (id) => {
         console.log("API CALL: PATCH /api/requests/" + id + "/pending");
         setRealtimeRequests((prev) =>

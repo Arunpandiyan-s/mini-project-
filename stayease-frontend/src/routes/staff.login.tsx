@@ -80,12 +80,9 @@ function StaffLoginPage() {
       setToken(res.access_token);
       login(selectedDept, idClean, res.user);
 
-      // Route according to department
-      if (selectedDept === "housekeeping" || selectedDept === "maintenance" || selectedDept === "fnb") {
-        void navigate({ to: "/dashboard/tasks" });
-      } else {
-        void navigate({ to: "/dashboard/operations" });
-      }
+      // Route to dashboard
+      void navigate({ to: "/dashboard" });
+
     } catch (err: unknown) {
       const apiErr = err as { status?: number; message?: string };
       let msg = "Authentication failed. Please verify your staff credentials.";
