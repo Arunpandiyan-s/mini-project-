@@ -514,15 +514,20 @@ def create_guest_booking(
     db.commit()
     db.refresh(reservation)
 
+    from app.models.staff import Staff
     from app.services.notification_service import create_notification
-    create_notification(
-        db=db,
-        staff_id=None,
-        role=StaffRole.RECEPTION,
-        title="New Room Booking",
-        message=f"Guest {current_guest.name} has booked Room {room.room_number} ({reservation.reservation_id}).",
-        type="reservation"
-    )
+    reception_staff = db.query(Staff).filter(Staff.role == StaffRole.RECEPTION).all()
+    for rec in reception_staff:
+        create_notification(
+            db=db,
+            recipient_staff_id=rec.staff_id,
+            type="reservation",
+            title="New Room Booking",
+            message=f"Guest {current_guest.name} has booked Room {room.room_number} ({reservation.reservation_id}).",
+            entity_type="reservation",
+            entity_id=reservation.reservation_id,
+        )
+    db.commit()
 
     emit_event(
         event_type="reservation.created",
