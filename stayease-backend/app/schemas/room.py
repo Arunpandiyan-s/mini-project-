@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from datetime import datetime
 from typing import Optional
 from app.models.enums import OccupancyStatus, CleaningStatus, MaintenanceStatus
@@ -54,4 +54,15 @@ class RoomMaintenanceReportRequest(BaseModel):
     issue: str = Field(..., min_length=3, max_length=500, description="Detailed defect description")
     priority: Optional[str] = Field("high", description="low, medium, high, urgent")
     blocks_occupancy: bool = Field(True, description="Whether this issue blocks guest occupancy")
+
+    @model_validator(mode="before")
+    @classmethod
+    def handle_aliases(cls, data):
+        if isinstance(data, dict):
+            if "issue" not in data and "issue_description" in data:
+                data["issue"] = data["issue_description"]
+            if "blocks_occupancy" not in data and "block_occupancy" in data:
+                data["blocks_occupancy"] = data["block_occupancy"]
+        return data
+
 

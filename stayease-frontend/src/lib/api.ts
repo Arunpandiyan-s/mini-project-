@@ -397,16 +397,21 @@ export async function inspectRoom(
 /** POST /api/rooms/{room_number}/maintenance — Report room defect and dispatch maintenance task */
 export async function reportRoomMaintenance(
   roomNumber: string,
-  payload: { issue_description: string; priority?: string; block_occupancy?: boolean }
+  payload: { issue?: string; issue_description?: string; priority?: string; block_occupancy?: boolean; blocks_occupancy?: boolean }
 ): Promise<{ status: string; task_id: string; room_number: string }> {
   return apiFetch<{ status: string; task_id: string; room_number: string }>(
     `/api/rooms/${roomNumber}/maintenance`,
     {
       method: "POST",
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        issue: payload.issue || payload.issue_description || "Maintenance required",
+        priority: (payload.priority || "high").toLowerCase(),
+        blocks_occupancy: payload.blocks_occupancy ?? payload.block_occupancy ?? true,
+      }),
     }
   );
 }
+
 
 /** PATCH /api/tasks/{task_id}/resolve — Resolve maintenance task and restore room to GOOD */
 export async function resolveTask(taskId: string, resolutionNotes?: string): Promise<ApiTask> {
