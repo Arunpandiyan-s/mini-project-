@@ -26,6 +26,8 @@ stayease.db
 !.env.example
 !**/.env.example
 *.log
+uv.lock
+**/uv.lock
 
 # Playwright MCP testing artifacts
 .playwright-mcp/

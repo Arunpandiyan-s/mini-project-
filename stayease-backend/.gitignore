@@ -1,5 +1,6 @@
 .env*
 !.env.example
+uv.lock
 venv/
 .venv/
 __pycache__/

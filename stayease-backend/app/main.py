@@ -35,11 +35,13 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
+cors_all_origins = "*" in settings.CORS_ORIGINS
+
 # Temporary broad CORS access for development and deployment testing.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_origin_regex=r"https?://.*",
+    allow_origins=[] if cors_all_origins else settings.CORS_ORIGINS,
+    allow_origin_regex=r"https?://.*" if cors_all_origins else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
