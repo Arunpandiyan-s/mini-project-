@@ -27,6 +27,11 @@ import { toast } from "sonner";
 import type { RoleId } from "@/lib/data";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>): { category?: "guest" | "staff" | "admin" } => {
+    return {
+      category: search.category as "guest" | "staff" | "admin" | undefined,
+    };
+  },
   head: () => ({
     meta: [
       { title: "Universal Login by Category: StayEase" },
@@ -43,9 +48,10 @@ type Category = "guest" | "staff" | "admin";
 
 export function UnifiedCategorizedLoginPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
   const { login } = useApp();
 
-  const [activeCategory, setActiveCategory] = useState<Category>("guest");
+  const [activeCategory, setActiveCategory] = useState<Category>(search?.category || "guest");
 
   // Guest State
   const [guestId, setGuestId] = useState("");
