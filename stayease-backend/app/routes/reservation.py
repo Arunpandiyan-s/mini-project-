@@ -39,7 +39,7 @@ def list_reservations(
         else:
             return []
     
-    res_list = query.all()
+    res_list = query.order_by(Reservation.created_at.desc()).all()
     out = []
     for r in res_list:
         resp = ReservationResponse.model_validate(r)

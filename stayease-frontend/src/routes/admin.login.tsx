@@ -92,28 +92,36 @@ function AdminLoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between p-4 sm:p-6 lg:p-10 relative overflow-hidden">
+    <main className="dark min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between p-4 sm:p-6 lg:p-10 relative overflow-hidden">
       {/* Subtle gold grid effect */}
       <div className="absolute inset-0 bg-[radial-gradient(#d97706_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
 
       <header className="mx-auto w-full max-w-5xl flex items-center justify-between z-10">
-        <Logo />
-        <Link
-          to="/staff/login"
-          className="text-xs font-semibold text-slate-400 hover:text-amber-400 transition-colors flex items-center gap-1.5"
-        >
-          Staff Portal Login <ArrowRight className="size-3.5" />
-        </Link>
+        <Logo className="[&_p]:text-white [&_p.text-muted-foreground]:text-slate-400" />
+        <div className="flex items-center gap-4">
+          <Link
+            to="/login"
+            className="text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+          >
+            Guest Portal
+          </Link>
+          <Link
+            to="/staff/login"
+            className="text-xs font-semibold text-slate-400 hover:text-amber-400 transition-colors flex items-center gap-1.5"
+          >
+            Staff Portal <ArrowRight className="size-3.5" />
+          </Link>
+        </div>
       </header>
 
       <div className="mx-auto w-full max-w-md my-auto py-8 z-10">
-        <div className="p-6 sm:p-8 rounded-3xl border border-amber-500/30 bg-slate-900/90 shadow-2xl backdrop-blur-xl space-y-6">
+        <div className="p-6 sm:p-8 rounded-3xl border border-amber-500/30 bg-gradient-to-b from-slate-900/95 to-slate-950/95 shadow-2xl shadow-amber-500/5 backdrop-blur-xl space-y-6">
           {/* Executive Shield Header */}
           <div className="text-center space-y-2">
             <div className="inline-grid size-14 place-items-center rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 shadow-inner mb-1">
               <ShieldCheck className="size-7" />
             </div>
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-[11px] font-bold text-amber-400 border border-amber-500/20">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3 py-1 text-[11px] font-bold text-amber-300 border border-amber-500/30">
               <KeyRound className="size-3" /> Elevated Privilege Console
             </div>
             <h1 className="text-2xl font-extrabold tracking-tight text-white">
@@ -125,24 +133,24 @@ function AdminLoginPage() {
           </div>
 
           {/* Demo Button */}
-          <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-800/60 border border-slate-700/60 text-xs">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-900/80 border border-slate-700/80 text-xs">
             <div className="text-slate-300">
-              <span className="font-semibold block text-slate-200">Admin Account:</span>
-              <span className="text-[11px] text-slate-400">daniel.o@stayease.com</span>
+              <span className="font-semibold block text-slate-100">Executive Account:</span>
+              <span className="text-xs font-mono text-amber-300 font-medium">daniel.o@stayease.com</span>
             </div>
             <Button
               type="button"
               size="sm"
               variant="outline"
               onClick={fillAdminDemo}
-              className="h-8 rounded-xl border-amber-500/50 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-semibold"
+              className="h-8 rounded-xl border border-amber-500/50 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25 text-xs font-bold transition-all shadow-sm"
             >
               <Sparkles className="size-3 mr-1" /> Auto-Fill
             </Button>
           </div>
 
           {error && (
-            <div className="rounded-2xl bg-rose-950/60 border border-rose-500/40 p-3.5 text-xs text-rose-300 flex items-start gap-2.5">
+            <div className="rounded-2xl bg-rose-950/70 border border-rose-500/40 p-3.5 text-xs text-rose-300 flex items-start gap-2.5">
               <AlertTriangle className="size-4 shrink-0 mt-0.5 text-rose-400" />
               <span>{error}</span>
             </div>
@@ -150,7 +158,7 @@ function AdminLoginPage() {
 
           <form onSubmit={handleAdminLogin} className="space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="admin-id" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              <Label htmlFor="admin-id" className="text-xs font-bold uppercase tracking-wider text-slate-300">
                 Admin Identifier / Employee Code
               </Label>
               <div className="relative">
@@ -158,7 +166,7 @@ function AdminLoginPage() {
                 <Input
                   id="admin-id"
                   placeholder="e.g. daniel.o@stayease.com or EMP-1001"
-                  className="h-12 rounded-xl pl-10 bg-slate-950 border-slate-700 text-slate-100 placeholder:text-slate-500 focus-visible:ring-amber-500 text-sm"
+                  className="h-12 rounded-xl pl-10 bg-slate-950/90 border-slate-700/80 text-slate-100 placeholder:text-slate-500 focus-visible:ring-2 focus-visible:ring-amber-500/60 focus-visible:border-amber-500 text-sm"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   required
@@ -167,7 +175,7 @@ function AdminLoginPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="admin-pass" className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              <Label htmlFor="admin-pass" className="text-xs font-bold uppercase tracking-wider text-slate-300">
                 Administrative Password
               </Label>
               <div className="relative">
@@ -176,7 +184,7 @@ function AdminLoginPage() {
                   id="admin-pass"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className="h-12 rounded-xl pl-10 pr-10 bg-slate-950 border-slate-700 text-slate-100 placeholder:text-slate-500 focus-visible:ring-amber-500 text-sm"
+                  className="h-12 rounded-xl pl-10 pr-10 bg-slate-950/90 border-slate-700/80 text-slate-100 placeholder:text-slate-500 focus-visible:ring-2 focus-visible:ring-amber-500/60 focus-visible:border-amber-500 text-sm font-mono"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -184,7 +192,7 @@ function AdminLoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1 rounded-md"
                 >
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
@@ -194,7 +202,7 @@ function AdminLoginPage() {
             <Button
               type="submit"
               disabled={loading || !identifier.trim() || !password}
-              className="w-full h-12 rounded-xl text-sm font-bold shadow-lg bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all cursor-pointer"
+              className="w-full h-12 rounded-xl text-sm font-bold shadow-lg transition-all cursor-pointer bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-amber-500/20 disabled:bg-none disabled:bg-slate-800 disabled:text-slate-500 disabled:border disabled:border-slate-700/60 disabled:cursor-not-allowed disabled:shadow-none"
             >
               {loading ? (
                 <>

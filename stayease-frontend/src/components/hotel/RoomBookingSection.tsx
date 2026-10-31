@@ -4,9 +4,13 @@ import { toast } from "sonner";
 import { listAvailableRooms, createGuestBooking, listGuestBookings } from "@/lib/api";
 import type { ApiDiscoveryRoom, ApiGuestBooking } from "@/lib/types";
 
-export function RoomBookingSection() {
+interface RoomBookingSectionProps {
+  onBookingCreated?: () => void;
+  hasActiveStay?: boolean;
+}
+
+export function RoomBookingSection({ onBookingCreated, hasActiveStay = false }: RoomBookingSectionProps) {
   const [rooms, setRooms] = useState<ApiDiscoveryRoom[]>([]);
-  const [bookings, setBookings] = useState<ApiGuestBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<ApiDiscoveryRoom | null>(null);
@@ -18,12 +22,8 @@ export function RoomBookingSection() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [roomData, bookingData] = await Promise.all([
-        listAvailableRooms().catch(() => []),
-        listGuestBookings().catch(() => []),
-      ]);
+      const roomData = await listAvailableRooms().catch(() => []);
       setRooms(roomData);
-      setBookings(bookingData);
     } catch {
       // silently handle load error
     } finally {
@@ -63,9 +63,12 @@ export function RoomBookingSection() {
     try {
       setSubmitting(true);
       const newBooking = await createGuestBooking(selectedRoom.room_number, ciIso, coIso);
-      toast.success(`Booking ${newBooking.reservation_id} created for Room ${newBooking.room_number}!`);
+      toast.success(`Booking ${newBooking.reservation_id} created for Room ${newBooking.room_number}! Front desk notified.`);
       setBookingModalOpen(false);
       await loadData();
+      if (onBookingCreated) {
+        onBookingCreated();
+      }
     } catch (err: any) {
       toast.error(err?.message || "Failed to create booking.");
     } finally {
@@ -86,21 +89,33 @@ export function RoomBookingSection() {
 
   return (
     <div className="space-y-6">
-      {/* Informational Banner for Non-Stay Guests */}
-      <div className="card-surface p-5 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-amber-500/20 text-amber-200 flex items-start gap-3">
-        <Lock className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
-        <div className="text-sm space-y-1">
-          <p className="font-semibold text-amber-300">Active Checked-In Stay Required</p>
-          <p className="text-xs text-amber-200/80 leading-relaxed">
-            You are signed in as a registered guest. Book a room stay below or check in at the reception desk to unlock in-room hotel service requests.
-          </p>
+      {/* Informational Banner */}
+      {hasActiveStay ? (
+        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2.5">
+            <Hotel className="size-4 text-primary shrink-0" />
+            <div>
+              <p className="font-semibold text-foreground">Reserve Additional Suites</p>
+              <p className="text-muted-foreground text-[11px]">Select any vacant room below to add more rooms to your hotel stay.</p>
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 flex items-start gap-3 text-foreground">
+          <Lock className="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="space-y-0.5 text-xs">
+            <p className="font-bold text-amber-900 dark:text-amber-200">Active Checked-In Stay Required</p>
+            <p className="text-amber-800/90 dark:text-amber-300/80 leading-relaxed">
+              You are signed in as a registered guest. Book a room stay below or complete check-in at the reception desk to unlock in-room hotel service requests.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Available Rooms Grid */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold flex items-center gap-2">
+          <h2 className="text-base font-semibold flex items-center gap-2 text-foreground">
             <Hotel className="h-5 w-5 text-primary" /> Browse Available Rooms
           </h2>
           <span className="text-xs text-muted-foreground">{vacantRooms.length} rooms available</span>
@@ -114,7 +129,7 @@ export function RoomBookingSection() {
             >
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-base">Room {room.room_number}</span>
+                  <span className="font-bold text-base text-foreground">Room {room.room_number}</span>
                   <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                     Floor {room.floor}
                   </span>
@@ -125,55 +140,13 @@ export function RoomBookingSection() {
               <button
                 type="button"
                 onClick={() => handleOpenBooking(room)}
-                className="px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-xs font-semibold text-primary-foreground shadow-sm transition"
+                className="px-3.5 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-xs font-semibold text-primary-foreground shadow-sm transition cursor-pointer"
               >
                 Book Room
               </button>
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Booking History List */}
-      <div className="space-y-3">
-        <h2 className="text-base font-semibold flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-primary" /> My Booking History
-        </h2>
-
-        {bookings.length === 0 ? (
-          <div className="card-surface p-6 text-center text-xs text-muted-foreground">
-            No booking reservations found. Select an available room above to create your first reservation.
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {bookings.map((b) => (
-              <div key={b.reservation_id} className="card-surface p-4 flex items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm">Room {b.room_number}</span>
-                    <span
-                      className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${
-                        b.status === "checked_in"
-                          ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                          : b.status === "booked"
-                          ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
-                          : "bg-slate-500/10 text-slate-400 border border-slate-500/20"
-                      }`}
-                    >
-                      {b.status.toUpperCase()}
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {b.reservation_id} · {b.room_type}
-                  </p>
-                  <p className="text-[11px] text-muted-foreground font-mono">
-                    Check-in: {new Date(b.check_in).toLocaleDateString()} · Check-out: {new Date(b.check_out).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Booking Modal */}

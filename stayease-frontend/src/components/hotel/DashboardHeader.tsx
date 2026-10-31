@@ -7,6 +7,7 @@
 import { Bell, CalendarDays, Settings } from "lucide-react";
 import avatar from "@/assets/guest-avatar.jpg";
 import type { ApiGuestProfile, ApiGuestStay } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 type Props = {
   unreadCount: number;
@@ -86,9 +87,31 @@ export function DashboardHeader({
             <p className="text-xs text-muted-foreground mt-0.5">{roomType}</p>
           </div>
           <div className="text-right space-y-1">
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
-              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              {stay ? "Checked In" : "Pre-Registered"}
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-md px-2.5 py-0.5 text-xs font-semibold border",
+                stay?.status === "checked_in"
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                  : stay?.status === "booked"
+                  ? "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300"
+                  : "border-slate-500/30 bg-slate-500/10 text-slate-700 dark:text-slate-300"
+              )}
+            >
+              <span
+                className={cn(
+                  "size-1.5 rounded-full",
+                  stay?.status === "checked_in"
+                    ? "bg-emerald-500 animate-pulse"
+                    : stay?.status === "booked"
+                    ? "bg-sky-500"
+                    : "bg-slate-400"
+                )}
+              />
+              {stay?.status === "checked_in"
+                ? "Checked In"
+                : stay?.status === "booked"
+                ? "Booking Confirmed"
+                : "Pre-Registered"}
             </span>
             <p className="text-[11px] font-mono text-muted-foreground tabular-nums">
               {activeRequests} active request{activeRequests === 1 ? "" : "s"}

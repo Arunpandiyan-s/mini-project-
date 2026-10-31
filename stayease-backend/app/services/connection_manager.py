@@ -66,13 +66,17 @@ class ConnectionManager:
                 self.disconnect_guest(guest_id, ws)
 
     async def send_to_role(self, role: StaffRole, event: dict):
+        role_str = role.value if hasattr(role, "value") else str(role)
         for s_id, r in list(self.staff_roles.items()):
-            if r == role:
+            r_str = r.value if hasattr(r, "value") else str(r)
+            if r_str.lower() == role_str.lower():
                 await self.send_to_staff(s_id, event)
 
     async def send_to_admins(self, event: dict):
-        # The existing Admin role is StaffRole.ADMIN or StaffRole.MANAGER. Let's send to ADMIN.
-        await self.send_to_role(StaffRole.ADMIN, event)
+        for s_id, r in list(self.staff_roles.items()):
+            r_str = r.value if hasattr(r, "value") else str(r)
+            if r_str.lower() in ["admin", "manager"]:
+                await self.send_to_staff(s_id, event)
 
     async def broadcast(self, event: dict):
         for s_id in list(self.active_connections.keys()):

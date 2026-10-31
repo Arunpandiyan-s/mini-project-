@@ -514,6 +514,16 @@ def create_guest_booking(
     db.commit()
     db.refresh(reservation)
 
+    from app.services.notification_service import create_notification
+    create_notification(
+        db=db,
+        staff_id=None,
+        role=StaffRole.RECEPTION,
+        title="New Room Booking",
+        message=f"Guest {current_guest.name} has booked Room {room.room_number} ({reservation.reservation_id}).",
+        type="reservation"
+    )
+
     emit_event(
         event_type="reservation.created",
         data={
@@ -521,9 +531,14 @@ def create_guest_booking(
             "guest_id": current_guest.guest_id,
             "guest_name": current_guest.name,
             "room_number": room.room_number,
+            "room_type": room.room_type,
+            "check_in": reservation.check_in.isoformat() if hasattr(reservation.check_in, "isoformat") else str(reservation.check_in),
+            "check_out": reservation.check_out.isoformat() if hasattr(reservation.check_out, "isoformat") else str(reservation.check_out),
             "status": reservation.status.value,
         },
         recipient_role=StaffRole.RECEPTION,
+        send_to_all_admins=True,
+        recipient_guest_id=current_guest.guest_id,
     )
 
     log_event(

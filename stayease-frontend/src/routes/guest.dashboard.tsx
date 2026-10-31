@@ -102,6 +102,19 @@ function Dashboard() {
 
   // ─── Load all data ──────────────────────────────────────────────────────
 
+  const fetchStays = useCallback(async () => {
+    try {
+      const [stayData, staysData] = await Promise.all([
+        getGuestStay().catch(() => null),
+        getGuestStays().catch(() => []),
+      ]);
+      setStay(stayData);
+      setStays(staysData);
+    } catch {
+      // silently ignore background refetch errors
+    }
+  }, []);
+
   const fetchRequests = useCallback(async () => {
     try {
       const reqs = await getGuestRequests();
@@ -205,11 +218,20 @@ function Dashboard() {
       void fetchNotifications();
     };
 
+    const handleReservationUpdate = () => {
+      void fetchStays();
+      void fetchRequests();
+      void fetchNotifications();
+    };
+
     guestWS.on("guest_request.created", handleRequestUpdate);
     guestWS.on("guest_request.cancelled", handleRequestUpdate);
     guestWS.on("task.completed", handleTaskUpdate);
     guestWS.on("task.assigned", handleNotificationUpdate);
     guestWS.on("task.accepted", handleNotificationUpdate);
+    guestWS.on("reservation.created", handleReservationUpdate);
+    guestWS.on("reservation.checked_in", handleReservationUpdate);
+    guestWS.on("reservation.checked_out", handleReservationUpdate);
 
     return () => {
       guestWS.off("guest_request.created", handleRequestUpdate);
@@ -217,8 +239,11 @@ function Dashboard() {
       guestWS.off("task.completed", handleTaskUpdate);
       guestWS.off("task.assigned", handleNotificationUpdate);
       guestWS.off("task.accepted", handleNotificationUpdate);
+      guestWS.off("reservation.created", handleReservationUpdate);
+      guestWS.off("reservation.checked_in", handleReservationUpdate);
+      guestWS.off("reservation.checked_out", handleReservationUpdate);
     };
-  }, [fetchRequests, fetchNotifications]);
+  }, [fetchRequests, fetchNotifications, fetchStays]);
 
   // ─── HANDLERS ──────────────────────────────────────────────────────────
 
@@ -335,20 +360,20 @@ function Dashboard() {
                 />
               )}
 
-              <RoomBookingSection />
+              <RoomBookingSection onBookingCreated={fetchStays} hasActiveStay={stays.length > 0} />
             </>
           ) : (
             <>
               {/* Back to Rooms Navigation Bar */}
-              <div className="flex items-center justify-between gap-3 p-3.5 bg-slate-900 border border-slate-800 rounded-2xl shadow-md">
+              <div className="flex items-center justify-between gap-3 p-3.5 rounded-2xl border border-border bg-card shadow-soft text-foreground">
                 <button
                   type="button"
                   onClick={() => setSelectedRoomNumber(null)}
-                  className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:underline px-3.5 py-2 rounded-xl bg-primary/10 border border-primary/20 transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:text-primary/80 px-3.5 py-2 rounded-xl bg-primary/10 border border-primary/20 transition-all cursor-pointer"
                 >
                   <ArrowLeft className="h-4 w-4" /> Back to My Booked Rooms
                 </button>
-                <span className="text-xs font-black uppercase tracking-wider text-slate-300">
+                <span className="text-xs font-black uppercase tracking-wider text-foreground">
                   Room {selectedRoomNumber} Services
                 </span>
               </div>
@@ -375,21 +400,35 @@ function Dashboard() {
                   </div>
                 </>
               ) : (
-                <div className="card-surface p-6 text-center space-y-3 border-amber-500/30 bg-amber-500/5">
-                  <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                    <Lock className="h-6 w-6" />
+                <div className="rounded-3xl border border-sky-500/30 bg-sky-500/5 p-6 sm:p-8 text-center space-y-4 shadow-soft">
+                  <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/25">
+                    <Lock className="h-7 w-7" />
                   </div>
-                  <h4 className="text-base font-extrabold text-amber-400">Receptionist Check-in Required</h4>
-                  <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-                    Your booking for Room {selectedRoomNumber} is reserved. Once the receptionist approves and completes your check-in at the front desk, in-room services will open automatically.
+                  <div className="space-y-1">
+                    <h4 className="text-lg font-extrabold text-foreground">Booking Confirmed: Room {selectedRoomNumber}</h4>
+                    <p className="text-xs text-muted-foreground font-mono">
+                      Reservation ID: {currentStay?.reservation_id || "Active"} · Status: Awaiting Front Desk Check-in
+                    </p>
+                  </div>
+                  <p className="text-xs text-muted-foreground max-w-md mx-auto leading-relaxed">
+                    Your reservation for Room {selectedRoomNumber} is registered in our hotel management system. Please visit the reception front desk upon arrival to complete check-in and unlock in-room service requests.
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedRoomNumber(null)}
-                    className="inline-flex items-center gap-2 text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 px-4 py-2 rounded-xl transition cursor-pointer"
-                  >
-                    <ArrowLeft className="h-4 w-4" /> Return to My Booked Rooms
-                  </button>
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setReceptionChatOpen(true)}
+                      className="inline-flex items-center gap-2 text-xs font-bold text-primary-foreground bg-primary hover:bg-primary/90 px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+                    >
+                      <MessageSquare className="h-4 w-4" /> Message Reception Desk
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRoomNumber(null)}
+                      className="inline-flex items-center gap-2 text-xs font-bold text-foreground bg-card border border-border hover:bg-muted px-4 py-2.5 rounded-xl transition cursor-pointer"
+                    >
+                      <ArrowLeft className="h-4 w-4" /> Return to My Booked Rooms
+                    </button>
+                  </div>
                 </div>
               )}
             </>
