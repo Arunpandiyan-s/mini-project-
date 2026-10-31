@@ -1,6 +1,6 @@
 import os
 import sys
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import Base, engine, SessionLocal
@@ -47,6 +47,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def normalize_api_paths(request: Request, call_next):
+    """
+    Ensures seamless routing whether requests hit root ('/'), Swagger docs,
+    or Vercel's serverless '/api' prefix, with or without '/api' route paths.
+    """
+    path = request.scope.get("path", "")
+    if path in ("/api", "/api/", "/api/index", "/api/index.py"):
+        request.scope["path"] = "/"
+    elif path == "/api/docs":
+        request.scope["path"] = "/docs"
+    elif path == "/api/openapi.json":
+        request.scope["path"] = "/openapi.json"
+    elif path == "/api/redoc":
+        request.scope["path"] = "/redoc"
+    elif path == "/api/health":
+        request.scope["path"] = "/health"
+    elif not path.startswith("/api/") and path not in ("/", "/docs", "/redoc", "/openapi.json", "/health", "/docs/oauth2-redirect"):
+        request.scope["path"] = "/api" + path
+    return await call_next(request)
+
 # Register routers
 app.include_router(auth.router)
 app.include_router(staff.router)
@@ -68,6 +89,8 @@ app.include_router(message.router)
 
 
 @app.get("/", tags=["General"])
+@app.get("/api", tags=["General"], include_in_schema=False)
+@app.get("/api/", tags=["General"], include_in_schema=False)
 def read_root():
     """
     Root endpoint verifying server availability.
@@ -78,6 +101,7 @@ def read_root():
     }
 
 @app.get("/health", tags=["General"])
+@app.get("/api/health", tags=["General"], include_in_schema=False)
 def health_check():
     """
     Service health check endpoint.
