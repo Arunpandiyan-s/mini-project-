@@ -98,7 +98,17 @@ function useClock() {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const { session, notifications, logout, onDuty, setNotifications, setTasks, refreshReservations } = useApp();
+  const {
+    session,
+    notifications,
+    logout,
+    onDuty,
+    setNotifications,
+    setTasks,
+    refreshReservations,
+    refreshRooms,
+    refreshStaff,
+  } = useApp();
   const [collapsed, setCollapsed] = useState(false);
   const [sendBroadcastOpen, setSendBroadcastOpen] = useState(false);
   const navigate = useNavigate();
@@ -142,8 +152,30 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   // WebSocket integration: connect after session confirmed, refetch on events
   const wsToken = session?.token ?? null;
-  const handleTaskEvent = useCallback(() => { void refreshTasks(); void refreshNotifications(); void refreshReservations(); }, [refreshTasks, refreshNotifications, refreshReservations]);
-  const handleRoomEvent = useCallback(() => { /* rooms refetch handled by room page */ }, []);
+  const handleTaskEvent = useCallback(() => {
+    void refreshTasks();
+    void refreshNotifications();
+    void refreshReservations();
+    void refreshRooms();
+  }, [refreshTasks, refreshNotifications, refreshReservations, refreshRooms]);
+
+  const handleReservationCreated = useCallback((data: Record<string, unknown>) => {
+    void refreshReservations();
+    void refreshTasks();
+    void refreshNotifications();
+    void refreshRooms();
+    const guestName = (data?.guest_name as string) || "Guest";
+    const roomNum = (data?.room_number as string) || "";
+    const resId = (data?.reservation_id as string) || "";
+    toast.success(`🔔 New Room Booking! ${guestName} booked Room ${roomNum} (${resId})`, {
+      duration: 7000,
+    });
+  }, [refreshReservations, refreshTasks, refreshNotifications, refreshRooms]);
+
+  const handleRoomEvent = useCallback(() => {
+    void refreshRooms();
+  }, [refreshRooms]);
+
   const handleAuthExpired = useCallback(() => {
     logout();
     void navigate({ to: "/" });
@@ -154,21 +186,25 @@ export function AppShell({ children }: { children: ReactNode }) {
     onTaskUpdated: handleTaskEvent,
     onTaskReassigned: handleTaskEvent,
     onTaskRemoved: handleTaskEvent,
-    onReservationCreated: handleTaskEvent,
+    onReservationCreated: handleReservationCreated,
+    onReservationCheckedIn: handleTaskEvent,
+    onReservationCheckedOut: handleTaskEvent,
     onRoomDirty: handleRoomEvent,
     onRoomCleaning: handleRoomEvent,
     onRoomClean: handleRoomEvent,
     onAuthExpired: handleAuthExpired,
   });
 
-  // Load initial notifications, tasks, and reservations when session is available
+  // Load initial notifications, tasks, reservations, rooms, and staff when session is available
   useEffect(() => {
     if (session?.token) {
       void refreshNotifications();
       void refreshTasks();
       void refreshReservations();
+      void refreshRooms();
+      void refreshStaff();
     }
-  }, [session?.token, refreshNotifications, refreshTasks, refreshReservations]);
+  }, [session?.token, refreshNotifications, refreshTasks, refreshReservations, refreshRooms, refreshStaff]);
 
   // Duty Gate Enforcement: Housekeeping and Reception staff must start duty before accessing secondary routes
   useEffect(() => {

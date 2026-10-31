@@ -50,15 +50,6 @@ const TASK_STATUS_CONFIG: Record<
   "Attention Needed": { bg: "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/25", dotColor: "bg-orange-500", label: "Escalated" },
 };
 
-const STAFF_LIST = [
-  { name: "Grace Okafor", role: "housekeeping", activeTasks: 3 },
-  { name: "Carlos Ruiz", role: "housekeeping", activeTasks: 2 },
-  { name: "Anita Sharma", role: "reception", activeTasks: 1 },
-  { name: "Ravi Kumar", role: "maintenance", activeTasks: 4 },
-  { name: "David Miller", role: "maintenance", activeTasks: 2 },
-  { name: "Mei Tanaka", role: "fnb", activeTasks: 2 },
-];
-
 export function OperationsMonitoringPanel() {
   const {
     tasks,
@@ -71,7 +62,24 @@ export function OperationsMonitoringPanel() {
     taskHistory,
     setTaskStatus,
     pushActivity,
+    staff,
   } = useApp();
+
+  const staffList = useMemo(() => {
+    if (staff && staff.length > 0) {
+      return staff.map((s) => ({
+        name: s.name,
+        role: s.role,
+        activeTasks: tasks.filter((t) => t.assignedTo === s.name && t.status !== "Completed").length,
+      }));
+    }
+    return [
+      { name: "Sarah Miller", role: "reception", activeTasks: tasks.filter((t) => t.assignedTo === "Sarah Miller" && t.status !== "Completed").length },
+      { name: "Elena Rostova", role: "housekeeping", activeTasks: tasks.filter((t) => t.assignedTo === "Elena Rostova" && t.status !== "Completed").length },
+      { name: "Marcus Torres", role: "maintenance", activeTasks: tasks.filter((t) => t.assignedTo === "Marcus Torres" && t.status !== "Completed").length },
+      { name: "Carlos Mendez", role: "fnb", activeTasks: tasks.filter((t) => t.assignedTo === "Carlos Mendez" && t.status !== "Completed").length },
+    ];
+  }, [staff, tasks]);
 
   // Filters & Search State
   const [searchQuery, setSearchQuery] = useState("");
@@ -87,7 +95,7 @@ export function OperationsMonitoringPanel() {
   const [newTaskType, setNewTaskType] = useState("Standard Cleaning");
   const [newTaskRole, setNewTaskRole] = useState<RoleId>("housekeeping");
   const [newTaskPriority, setNewTaskPriority] = useState<Priority>("Medium");
-  const [newTaskAssignedTo, setNewTaskAssignedTo] = useState("Grace Okafor");
+  const [newTaskAssignedTo, setNewTaskAssignedTo] = useState("Elena Rostova");
   const [newTaskEta, setNewTaskEta] = useState("30 min");
   const [newTaskDescription, setNewTaskDescription] = useState("");
 
@@ -212,7 +220,7 @@ export function OperationsMonitoringPanel() {
           </div>
 
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-            {STAFF_LIST.map((st) => {
+            {staffList.map((st) => {
               const activeCount = tasks.filter((t) => (t.assignedTo === st.name || (t.role === st.role && t.status !== "Completed"))).length;
               return (
                 <div key={st.name} className="flex items-center justify-between p-3 rounded-xl bg-muted/40 border border-border">
@@ -313,7 +321,7 @@ export function OperationsMonitoringPanel() {
               className="h-11 px-3 rounded-xl border border-border bg-card text-foreground text-xs font-bold focus:outline-none"
             >
               <option value="All">All Employees</option>
-              {STAFF_LIST.map((s) => (
+              {staffList.map((s) => (
                 <option key={s.name} value={s.name}>{s.name}</option>
               ))}
             </select>

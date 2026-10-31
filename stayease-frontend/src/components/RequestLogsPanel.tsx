@@ -13,99 +13,39 @@ export type RequestLogItem = {
   status: "Completed" | "In Progress" | "Pending" | "Attention Needed";
 };
 
-// Rich sample activity logs demonstrating guest requests & staff assignments
-const INITIAL_LOGS: RequestLogItem[] = [
-  {
-    id: "LOG-201",
-    room: "201",
-    category: "Housekeeping",
-    requestText: "Guest asked Housekeeping to clean spilled tea on carpet",
-    assignedStaff: "Grace Okafor",
-    time: "10:15 AM",
-    status: "In Progress",
-  },
-  {
-    id: "LOG-305",
-    room: "305",
-    category: "Maintenance",
-    requestText: "Guest reported AC blowing warm air (Compressor check)",
-    assignedStaff: "Ravi Kumar",
-    time: "09:30 AM",
-    status: "In Progress",
-  },
-  {
-    id: "LOG-508",
-    room: "508",
-    category: "Food & Beverage",
-    requestText: "Breakfast set for 2, allergy note: no nuts",
-    assignedStaff: "Mei Tanaka",
-    time: "10:20 AM",
-    status: "In Progress",
-  },
-  {
-    id: "LOG-210",
-    room: "210",
-    category: "Reception",
-    requestText: "Guest requested extra towels and late checkout confirmation",
-    assignedStaff: "Anita Sharma",
-    time: "10:12 AM",
-    status: "Pending",
-  },
-  {
-    id: "LOG-108",
-    room: "108",
-    category: "Housekeeping",
-    requestText: "VIP guest requested fresh linen immediately",
-    assignedStaff: "Grace Okafor",
-    time: "08:55 AM",
-    status: "Completed",
-  },
-  {
-    id: "LOG-217",
-    room: "217",
-    category: "Maintenance",
-    requestText: "Bathroom sink faucet dripping continuously",
-    assignedStaff: "Ravi Kumar",
-    time: "09:15 AM",
-    status: "Pending",
-  },
-  {
-    id: "LOG-406",
-    room: "406",
-    category: "Housekeeping",
-    requestText: "Post-maintenance cleanup required after plumbing repair",
-    assignedStaff: "Grace Okafor",
-    time: "10:05 AM",
-    status: "Attention Needed",
-  },
-  {
-    id: "LOG-119",
-    room: "119",
-    category: "Maintenance",
-    requestText: "TV Signal issue on channels 20-40 reported by guest",
-    assignedStaff: "David Miller",
-    time: "09:50 AM",
-    status: "Pending",
-  },
-  {
-    id: "LOG-126",
-    room: "126",
-    category: "Food & Beverage",
-    requestText: "Mini bar restock: beverages and snacks requested",
-    assignedStaff: "Mei Tanaka",
-    time: "09:05 AM",
-    status: "Pending",
-  },
-];
-
 export function RequestLogsPanel() {
-  const { guestRequests, tasks, activity } = useApp();
+  const { guestRequests, tasks } = useApp();
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Combine initial logs with live guestRequests, tasks, and system activity
+  // Map real live tasks and guestRequests into log items
   const allLogs: RequestLogItem[] = useMemo(() => {
-    const combined: RequestLogItem[] = [...INITIAL_LOGS];
+    const combined: RequestLogItem[] = [];
+
+    // Map live tasks
+    tasks.forEach((t) => {
+      combined.push({
+        id: `LOG-TASK-${t.id}`,
+        room: t.room,
+        category: (t.role === "housekeeping"
+          ? "Housekeeping"
+          : t.role === "maintenance"
+          ? "Maintenance"
+          : t.role === "fnb"
+          ? "Food & Beverage"
+          : "Reception") as RequestLogItem["category"],
+        requestText: t.description || t.type,
+        assignedStaff: t.assignedTo || "Staff Member",
+        time: t.assignedAt || "Just now",
+        status: (t.status === "In Progress"
+          ? "In Progress"
+          : t.status === "Completed"
+          ? "Completed"
+          : t.status === "Attention Needed"
+          ? "Attention Needed"
+          : "Pending") as RequestLogItem["status"],
+      });
+    });
 
     // Map live guest requests into log items
     guestRequests.forEach((gr) => {
@@ -121,7 +61,7 @@ export function RequestLogsPanel() {
             ? "Housekeeping"
             : "Reception",
           requestText: `Guest request: "${gr.detail}"`,
-          assignedStaff: gr.status === "Approved" ? "Anita Sharma" : "Staff Member",
+          assignedStaff: "Front Desk Staff",
           time: gr.time || "Just now",
           status: gr.status === "Approved" ? "In Progress" : gr.status === "Rejected" ? "Completed" : "Pending",
         });
@@ -129,7 +69,7 @@ export function RequestLogsPanel() {
     });
 
     return combined;
-  }, [guestRequests]);
+  }, [tasks, guestRequests]);
 
   // Filter logs by category and search query
   const filteredLogs = useMemo(() => {

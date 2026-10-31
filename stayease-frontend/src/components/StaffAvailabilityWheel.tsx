@@ -12,32 +12,15 @@ export type StaffMemberAvailability = {
   shift: string;
 };
 
-// Initial default staff pool including names from user request and active system staff
-const INITIAL_STAFF_MEMBERS: StaffMemberAvailability[] = [
-  { id: "S-1", name: "Harish", department: "Housekeeping", role: "Cleaner", status: "Working", shift: "08:00 - 16:00" },
-  { id: "S-2", name: "Vijay", department: "Maintenance", role: "Electrician", status: "Working", shift: "06:00 - 14:00" },
-  { id: "S-3", name: "Dinesh", department: "Food & Beverage", role: "Server", status: "Leave the duty", shift: "10:00 - 18:00" },
-  { id: "S-4", name: "Austin", department: "Reception", role: "Front Desk", status: "Working", shift: "07:00 - 15:00" },
-  { id: "S-5", name: "Keerthi", department: "Housekeeping", role: "Supervisor", status: "Working", shift: "08:00 - 16:00" },
-  { id: "S-6", name: "Anita Sharma", department: "Reception", role: "Receptionist", status: "Working", shift: "07:00 - 15:00" },
-  { id: "S-7", name: "Ravi Kumar", department: "Maintenance", role: "Technician", status: "Working", shift: "06:00 - 14:00" },
-  { id: "S-8", name: "Grace Okafor", department: "Housekeeping", role: "Senior Cleaner", status: "Working", shift: "08:00 - 16:00" },
-  { id: "S-9", name: "Samuel Tetteh", department: "Maintenance", role: "Plumber", status: "Leave the duty", shift: "14:00 - 22:00" },
-  { id: "S-10", name: "Mei Tanaka", department: "Food & Beverage", role: "Chef", status: "Working", shift: "10:00 - 18:00" },
-  { id: "S-11", name: "Laura Fernandes", department: "Housekeeping", role: "Attendant", status: "Leave the duty", shift: "08:00 - 16:00" },
-  { id: "S-12", name: "Omar Haddad", department: "Reception", role: "Concierge", status: "Leave the duty", shift: "15:00 - 23:00" },
-];
-
 export function StaffAvailabilityWheel() {
   const { staff: systemStaff } = useApp();
   const [selectedDept, setSelectedDept] = useState<string>("All");
   const [hoveredStaffId, setHoveredStaffId] = useState<string | null>(null);
 
-  // Sync with store state if available, or fallback to full initial pool
+  // Sync with real store state
   const staffList: StaffMemberAvailability[] = useMemo(() => {
     if (systemStaff && systemStaff.length > 0) {
-      // Map system staff to availability format
-      const systemMapped = systemStaff.map((s) => ({
+      return systemStaff.map((s) => ({
         id: s.id,
         name: s.name,
         department: (s.role === "reception"
@@ -53,14 +36,8 @@ export function StaffAvailabilityWheel() {
         status: (s.duty === "On Duty" ? "Working" : "Leave the duty") as StaffMemberAvailability["status"],
         shift: s.shift,
       }));
-
-      // Combine with user specific names if not present
-      const extraUserNames = INITIAL_STAFF_MEMBERS.filter(
-        (m) => !systemMapped.some((sm) => sm.name.toLowerCase() === m.name.toLowerCase())
-      );
-      return [...INITIAL_STAFF_MEMBERS.slice(0, 5), ...systemMapped, ...extraUserNames.slice(5)];
     }
-    return INITIAL_STAFF_MEMBERS;
+    return [];
   }, [systemStaff]);
 
   // Filtered by department
@@ -117,6 +94,13 @@ export function StaffAvailabilityWheel() {
 
       {/* CIRCULAR WHEEL SVG & POINTER CALLOUT DIAGRAM */}
       <div className="relative flex flex-col items-center justify-center min-h-[420px] overflow-hidden">
+        {total === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center space-y-2">
+            <Users className="size-10 text-muted-foreground/40" />
+            <p className="text-sm font-semibold text-foreground">No staff members found</p>
+            <p className="text-xs text-muted-foreground">Staff will appear here when registered and on duty.</p>
+          </div>
+        ) : (
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
           className="w-full max-w-[620px] h-auto overflow-visible select-none"
@@ -276,6 +260,7 @@ export function StaffAvailabilityWheel() {
             <tspan x={cx} dy="16" className="fill-emerald-600 dark:fill-emerald-400 font-bold" style={{ fontSize: "10px" }}>{workingCount} / {total} Active</tspan>
           </text>
         </svg>
+        )}
       </div>
 
       {/* BOTTOM LEGEND & DETAILED HOVER PROMPT */}

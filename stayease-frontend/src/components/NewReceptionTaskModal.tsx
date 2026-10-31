@@ -93,7 +93,7 @@ export function NewReceptionTaskModal() {
                 Priority: <span className="text-destructive font-bold">{newReceptionTaskAlert.priority}</span>
               </p>
               <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                Assigned Staff: <span className="text-foreground font-bold">{newReceptionTaskAlert.assignedTo || "Anita Sharma"}</span>
+                Assigned Staff: <span className="text-foreground font-bold">{newReceptionTaskAlert.assignedTo || "Front Desk Staff"}</span>
               </p>
             </div>
 

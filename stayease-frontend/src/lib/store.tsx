@@ -30,12 +30,14 @@ import {
   getMe,
   updateMyDutyStatus,
   listReservations,
+  listRooms,
+  listStaff,
   checkInReservation,
   registerUnauthorizedHandler,
   triggerN8nWebhook as _triggerN8nWebhookNoOp,
 } from "./api";
 import { staffWS } from "./websocket";
-import type { ApiStaff } from "./types";
+import type { ApiStaff, ApiRoom } from "./types";
 
 // ─── BACKEND → UI ADAPTER HELPERS ────────────────────────────────────────────
 
@@ -299,6 +301,8 @@ type AppState = {
   reservations: Reservation[];
   setReservations: React.Dispatch<React.SetStateAction<Reservation[]>>;
   refreshReservations: () => Promise<void>;
+  refreshRooms: () => Promise<void>;
+  refreshStaff: () => Promise<void>;
   bookings: Booking[];
   preRegistrations: PreRegistration[];
   leaveRequests: LeaveRequest[];
@@ -350,11 +354,11 @@ const now = () =>
   new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
 const STAFF_PROFILES: Record<RoleId, { name: string; employeeId: string; shift: string }> = {
-  reception: { name: "Anita Sharma", employeeId: "EMP-1001", shift: "07:00 - 15:00" },
-  housekeeping: { name: "Grace Okafor", employeeId: "EMP-1003", shift: "08:00 - 16:00" },
-  maintenance: { name: "Ravi Kumar", employeeId: "EMP-1002", shift: "06:00 - 14:00" },
-  fnb: { name: "Mei Tanaka", employeeId: "EMP-1005", shift: "10:00 - 18:00" },
-  manager: { name: "Daniel Okoye", employeeId: "EMP-1010", shift: "09:00 - 19:00" },
+  reception: { name: "Sarah Miller", employeeId: "EMP-RECP-001", shift: "07:00 - 15:00" },
+  housekeeping: { name: "Elena Rostova", employeeId: "EMP-HK-001", shift: "08:00 - 16:00" },
+  maintenance: { name: "Marcus Torres", employeeId: "EMP-MAINT-001", shift: "06:00 - 14:00" },
+  fnb: { name: "Carlos Mendez", employeeId: "EMP-FNB-001", shift: "10:00 - 18:00" },
+  manager: { name: "Daniel Okoye", employeeId: "EMP-ADM-001", shift: "09:00 - 19:00" },
 };
 
 export function normalizeWorkflowTask(t: any): Task {
@@ -407,110 +411,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [onDuty, setOnDuty] = useState(false);
   const [dutyStart, setDutyStart] = useState<string | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  // Phase 8: rooms, staff, notifications, reservations start empty — populated from FastAPI
+  // Real backend-driven state — populated from FastAPI
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [orders, setOrders] = useState<FoodOrder[]>(ORDERS);
-  const [tickets, setTickets] = useState<Ticket[]>(() =>
-    TICKETS.map((t) =>
-      t.id === "M-501" ? { ...t, status: "Open", technician: "Unassigned" } : t,
-    ),
-  );
+  const [orders, setOrders] = useState<FoodOrder[]>([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
   const [staff, setStaff] = useState<Staff[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [activeBroadcast, setActiveBroadcast] = useState<{ id: string; title: string; body: string; time: string; sender: string } | null>(null);
-  const [guestRequests, setGuestRequests] = useState<GuestRequest[]>(GUEST_REQUESTS);
-  const [staffRequests, setStaffRequests] = useState<StaffRequest[]>(STAFF_REQUESTS);
-  const [activity, setActivity] = useState(ACTIVITY);
-  const [auditLog, setAuditLog] = useState(AUDIT_LOG);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: "C-1", from: "manager", topic: "Announcement", text: "Good morning team. VIP arrival at 13:00 in room 512.", time: "08:30" },
-    { id: "C-2", from: "me", topic: "Message Manager", text: "Noted. Room 512 will be ready by 12:00.", time: "08:34" },
-  ]);
+  const [guestRequests, setGuestRequests] = useState<GuestRequest[]>([]);
+  const [staffRequests, setStaffRequests] = useState<StaffRequest[]>([]);
+  const [activity, setActivity] = useState<{ id: string; text: string; time: string }[]>([]);
+  const [auditLog, setAuditLog] = useState<{ id: string; action: string; detail: string; by: string; time: string }[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
-  // Receptionist Backend Simulated DB tables
+  // Receptionist Backend tables
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [preRegistrations, setPreRegistrations] = useState<PreRegistration[]>([
-    {
-      id: "PR-101",
-      guestName: "Samantha Miller",
-      phone: "+91 95400 12345",
-      email: "samantha.m@example.com",
-      guestCount: 2,
-      parking: true,
-      specialRequests: "High floor preferred, quiet room.",
-      arrivalDate: "Today",
-      roomType: "Executive Suite",
-      status: "Pending"
-    },
-    {
-      id: "PR-102",
-      guestName: "Rajesh Koothrappali",
-      phone: "+91 99111 88776",
-      email: "rajesh.k@example.com",
-      guestCount: 1,
-      parking: false,
-      specialRequests: "Aromatic diffuser in room and extra towels.",
-      arrivalDate: "Tomorrow",
-      roomType: "Deluxe King",
-      status: "Pending"
-    }
-  ]);
-  const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([
-    {
-      id: "LV-201",
-      staffName: "Anita Sharma",
-      role: "reception",
-      reason: "Medical checkup - dentist appointment",
-      status: "Pending",
-      submittedAt: "Yesterday"
-    }
-  ]);
+  const [preRegistrations, setPreRegistrations] = useState<PreRegistration[]>([]);
+  const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [attendanceLogs, setAttendanceLogs] = useState<AttendanceLog[]>([]);
   const [taskHistory, setTaskHistory] = useState<TaskHistoryItem[]>([]);
   const [forceCheckoutRecords, setForceCheckoutRecords] = useState<ForceCheckoutRecord[]>([]);
   const [newReceptionTaskAlert, setNewReceptionTaskAlert] = useState<Task | null>(null);
 
-  // Phase 8: realtimeRequests starts EMPTY — populated from GET /api/operations/feed and real WebSocket events only.
-  // Do NOT pre-populate with fake events. Admin must trust these came from the backend.
+  // Real-time operations feed
   const [realtimeRequests, setRealtimeRequests] = useState<RealtimeRequest[]>([]);
-
-  /**
-   * @deprecated Phase 8: n8n webhook calls removed from all core flows.
-   * This is a no-op stub retained for component interface compatibility during migration.
-   * Core operations use FastAPI directly. Do NOT fire real webhook requests from here.
-   */
-  const triggerN8nWebhook = async (event: string, payload: unknown): Promise<void> => {
-    _triggerN8nWebhookNoOp(event, payload);
-  };
-
-  // Phase 8: Restore session from FastAPI JWT on mount.
-  // Only a valid GET /api/auth/me response establishes authentication.
-  // Legacy localStorage keys ("stayease", "stayease_auth_token") are cleared and ignored.
-  const sessionRestoredRef = useRef(false);
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (sessionRestoredRef.current) return;
-    sessionRestoredRef.current = true;
-
-    // Clear legacy session data that may exist from old webhook-based sessions
-    window.localStorage.removeItem("stayease");
-    window.localStorage.removeItem("stayease_auth_token");
-
-    const token = getToken();
-    if (!token) return;
-
-    // Validate token against backend before restoring session
-    getMe().then((staff: ApiStaff) => {
-      const uiRole = mapBackendRole(staff.role);
-      setSelectedRoleState(uiRole);
-      setSession(buildSession(staff, token));
-      setOnDuty(staff.duty_status === "on_duty");
-    }).catch(() => {
-      // Token invalid or expired — clear it silently
-      removeToken();
-    });
-  }, []);
 
   const refreshReservations = useCallback(async () => {
     try {
@@ -527,6 +452,104 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // silent background retry
     }
   }, []);
+
+  const refreshRooms = useCallback(async () => {
+    try {
+      const data = await listRooms();
+      const mapped: Room[] = data.map((r: ApiRoom) => {
+        let status: RoomStatus = "Available";
+        if (r.occupancy_status === "occupied") {
+          status = "Occupied";
+        } else if (r.cleaning_status === "dirty") {
+          status = "Cleaning Required";
+        } else if (r.cleaning_status === "cleaning") {
+          status = "Cleaning In Progress";
+        } else if (r.cleaning_status === "inspecting") {
+          status = "Waiting Cleaning Verification";
+        } else if (r.maintenance_status === "maintenance_required") {
+          status = "Maintenance Required";
+        } else if (r.maintenance_status === "under_maintenance") {
+          status = "Under Maintenance";
+        } else if (r.maintenance_status === "out_of_service") {
+          status = "Out of Service";
+        } else {
+          status = "Available";
+        }
+        return {
+          number: r.room_number,
+          floor: r.floor,
+          status,
+          type: r.room_type,
+          guest: r.occupancy_status === "occupied" ? "Occupied Guest" : undefined,
+          pricePerNight: 250,
+          capacity: 2,
+        };
+      });
+      setRooms(mapped);
+    } catch {
+      // silent background retry
+    }
+  }, []);
+
+  const refreshStaff = useCallback(async () => {
+    try {
+      const data = await listStaff();
+      const mapped: Staff[] = data.map((s: ApiStaff) => ({
+        id: s.staff_id,
+        name: s.name,
+        role: mapBackendRole(s.role),
+        floor: s.floor || "Lobby",
+        phone: s.phone || "N/A",
+        email: s.email,
+        joined: new Date(s.created_at).toISOString().split("T")[0] || "2024-01-01",
+        employment: s.employment_status === "suspended" ? "Suspended" : s.employment_status === "terminated" ? "Terminated" : "Active",
+        duty: s.duty_status === "on_duty" ? "On Duty" : "Off Duty",
+        shift: s.shift || "08:00 - 16:00",
+        performance: 95,
+        completion: 96,
+        responseMin: 4,
+        lastLogin: "Active",
+        notes: `${s.name} - ${s.role}`,
+      }));
+      setStaff(mapped);
+    } catch {
+      // silent background retry
+    }
+  }, []);
+
+  /**
+   * @deprecated Phase 8: n8n webhook calls removed from all core flows.
+   */
+  const triggerN8nWebhook = async (event: string, payload: unknown): Promise<void> => {
+    _triggerN8nWebhookNoOp(event, payload);
+  };
+
+  // Restore session from FastAPI JWT on mount.
+  const sessionRestoredRef = useRef(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (sessionRestoredRef.current) return;
+    sessionRestoredRef.current = true;
+
+    window.localStorage.removeItem("stayease");
+    window.localStorage.removeItem("stayease_auth_token");
+
+    const token = getToken();
+    if (!token) return;
+
+    // Validate token against backend before restoring session
+    getMe().then((staffMember: ApiStaff) => {
+      const uiRole = mapBackendRole(staffMember.role);
+      setSelectedRoleState(uiRole);
+      setSession(buildSession(staffMember, token));
+      setOnDuty(staffMember.duty_status === "on_duty");
+      void refreshRooms();
+      void refreshStaff();
+      void refreshReservations();
+    }).catch(() => {
+      removeToken();
+    });
+  }, [refreshRooms, refreshStaff, refreshReservations]);
 
   // Register global 401 handler — fires once, redirects to login
   useEffect(() => {
@@ -623,21 +646,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const getAutoAssignedStaff = (role: RoleId): string => {
-    const staffPool: Record<RoleId, string[]> = {
-      housekeeping: ["Grace Okafor", "Carlos Ruiz", "Anita Sharma"],
-      maintenance: ["Ravi Kumar", "David Miller"],
-      fnb: ["Mei Tanaka"],
-      reception: ["Anita Sharma"],
-      manager: ["Manager"],
-    };
+    const roleStaff = staff.filter((s) => s.role === role);
+    if (roleStaff.length > 0) {
+      const counts = roleStaff.map((s) => ({
+        name: s.name,
+        count: tasks.filter((t) => t.assignedTo === s.name && t.status !== "Completed").length,
+      }));
+      counts.sort((a, b) => a.count - b.count);
+      return counts[0]?.name || roleStaff[0]!.name;
+    }
 
-    const pool = staffPool[role] || ["Grace Okafor"];
-    const counts = pool.map((name) => ({
-      name,
-      count: tasks.filter((t) => t.assignedTo === name && t.status !== "Completed").length,
-    }));
-    counts.sort((a, b) => a.count - b.count);
-    return counts[0]?.name || pool[0]!;
+    const defaultNames: Record<RoleId, string> = {
+      housekeeping: "Elena Rostova",
+      maintenance: "Marcus Torres",
+      reception: "Sarah Miller",
+      fnb: "Carlos Mendez",
+      manager: "Daniel Okoye",
+    };
+    return defaultNames[role] || "Staff Member";
   };
 
   const recordAttendance = () => {
@@ -659,10 +685,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       selectedRole,
       setSelectedRole: (r) => setSelectedRoleState(r),
       session,
-      // Phase 8: login() accepts ApiStaff from backend + the JWT access_token
       login: (role, identifier, userData?: any, workflowTasks?: any[]) => {
-        // userData is ApiStaff when coming from FastAPI login
-        // The token is stored separately in localStorage by login.tsx before calling login()
         const token = getToken() ?? "";
         const uiRole = mapBackendRole(userData?.role ?? role);
         setSelectedRoleState(uiRole);
@@ -670,6 +693,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setOnDuty(userData?.duty_status === "on_duty" ?? true);
         setDutyStart(now());
         setTasks([]);
+        void refreshRooms();
+        void refreshStaff();
+        void refreshReservations();
       },
       logout: () => {
         removeToken();
@@ -889,6 +915,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         }
       },
       refreshReservations,
+      refreshRooms,
+      refreshStaff,
       checkInGuest: (resId) => {
         const res = reservations.find((r) => r.id === resId);
         const guestName = res?.guest || "Guest";
@@ -1544,6 +1572,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       attendanceLogs,
       taskHistory,
       forceCheckoutRecords,
+      refreshRooms,
+      refreshStaff,
+      refreshReservations,
     ]
   );
 

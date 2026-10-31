@@ -73,36 +73,37 @@ export function RoomGrid({ floorFilter }: { floorFilter?: number }) {
     }
   }, [active]);
 
-  // Mock guest details for Occupied room
+  // Guest details for Occupied room
   const getMockGuestDetails = (roomNumber: string, guestName: string) => {
+    const res = reservations.find(r => r.room === roomNumber);
     return {
-      guestName: guestName || "Alex Johnson",
-      bookingId: `BK-OCC-${roomNumber}`,
-      checkInDate: "2026-08-01",
-      checkOutDate: "2026-08-06",
-      roomServiceRequests: ["Fresh towels (completed)", "Club sandwich & espresso (pending)"],
-      vipStatus: parseInt(roomNumber) % 5 === 0,
-      specialRequirements: "Allergy note: Gluten free food only. Quiet room preferred.",
-      contactNumber: "+91 98888 77777"
+      guestName: guestName || res?.guest || "Hotel Guest",
+      bookingId: res?.id || `BK-OCC-${roomNumber}`,
+      checkInDate: res?.arrival || "Today",
+      checkOutDate: "Upcoming",
+      roomServiceRequests: [],
+      vipStatus: false,
+      specialRequirements: "Registered stay",
+      contactNumber: "On File"
     };
   };
 
-  // Mock reservation details for Reserved room
+  // Reservation details for Reserved room
   const getMockReservationDetails = (roomNumber: string) => {
     const res = reservations.find(r => r.room === roomNumber);
     return {
-      guestName: res?.guest || "Samantha Miller",
-      reservationId: res?.id || `R-95${roomNumber}`,
-      checkInDate: "2026-08-03",
-      checkOutDate: "2026-08-07",
+      guestName: res?.guest || "Registered Guest",
+      reservationId: res?.id || `RES-${roomNumber}`,
+      checkInDate: res?.arrival || "Today",
+      checkOutDate: "Upcoming",
       guestsCount: 2,
-      parking: true,
-      specialRequirements: "Late check-in requested (around 22:00)."
+      parking: false,
+      specialRequirements: "Reserved stay awaiting check-in."
     };
   };
 
   const handleConfirmReservation = (roomNum: string) => {
-    const res = reservations.find(r => r.room === roomNum) || { guest: "Samantha Miller", id: `R-95${roomNum}` };
+    const res = reservations.find(r => r.room === roomNum) || { guest: "Guest", id: `RES-${roomNum}` };
     
     // Update room status to Occupied
     setRooms(prev => prev.map(r => r.number === roomNum ? { ...r, status: "Occupied", guest: res.guest } : r));
@@ -117,7 +118,7 @@ export function RoomGrid({ floorFilter }: { floorFilter?: number }) {
   };
 
   const handleCancelReservation = (roomNum: string) => {
-    const res = reservations.find(r => r.room === roomNum) || { guest: "Samantha Miller" };
+    const res = reservations.find(r => r.room === roomNum) || { guest: "Guest" };
     
     // Update room status to Available
     setRooms(prev => prev.map(r => r.number === roomNum ? { ...r, status: "Available", guest: undefined } : r));

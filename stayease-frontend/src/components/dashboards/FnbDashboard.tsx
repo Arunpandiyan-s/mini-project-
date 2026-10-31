@@ -29,35 +29,34 @@ type Chef = {
 };
 
 const INITIAL_CHEFS: Chef[] = [
-  { id: "c1", name: "Chef Vikram", specialty: "Head Chef & Mains", onDuty: true },
-  { id: "c2", name: "Chef Ananya", specialty: "Breakfast & Pastry", onDuty: true },
-  { id: "c3", name: "Chef Marcus", specialty: "Grill & Continental", onDuty: false },
-  { id: "c4", name: "Chef Rajesh", specialty: "Beverages & Snacks", onDuty: true },
+  { id: "c1", name: "Carlos Mendez", specialty: "Executive Chef & F&B Lead", onDuty: true },
 ];
 
-const GUEST_COMMENTS: Record<string, string> = {
-  "O-701": "Extra hot toast, no butter, fresh orange juice with pulp.",
-  "O-702": "Gluten-free bread, extra napkins, sauce on the side.",
-  "O-703": "Dressing on the side, salmon well-done, extra lemon wedges.",
-  "O-704": "Decaf espresso, extra brown sugar sachets.",
-  "O-705": "Less oil in masala chai, extra spicy veg wrap.",
-};
+const GUEST_COMMENTS: Record<string, string> = {};
 
-const VIP_ORDERS: Record<string, boolean> = {
-  "O-701": true,
-  "O-703": true,
-};
+const VIP_ORDERS: Record<string, boolean> = {};
 
 const ETA_PRESETS = ["10 min", "15 min", "20 min", "25 min", "30 min"];
 
 export function FnbDashboard() {
-  const { orders, setOrderStatus, pushActivity } = useApp();
+  const { orders, setOrderStatus, pushActivity, staff } = useApp();
   const [activeTab, setActiveTab] = useState<"active" | "completed">("active");
   const [chefs, setChefs] = useState<Chef[]>(INITIAL_CHEFS);
-  const [orderEtas, setOrderEtas] = useState<Record<string, string>>({
-    "O-701": "15 min",
-    "O-702": "20 min",
-    "O-703": "25 min",
+  const [orderEtas, setOrderEtas] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const fnbStaff = staff.filter((s) => s.role === "fnb");
+    if (fnbStaff.length > 0) {
+      setChefs(
+        fnbStaff.map((s) => ({
+          id: s.id,
+          name: s.name,
+          specialty: s.shift || "F&B Operations",
+          onDuty: s.duty === "On Duty",
+        }))
+      );
+    }
+  }, [staff]);
     "O-704": "10 min",
     "O-705": "15 min",
   });
