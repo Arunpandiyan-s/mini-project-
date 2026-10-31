@@ -15,7 +15,7 @@ from app.models.room import Room
 from app.models.guest_request import GuestRequest
 from app.models.task import Task
 from app.models.enums import (
-    ReservationStatus, RequestType, RequestStatus, TaskStatus,
+    StaffRole, ReservationStatus, RequestType, RequestStatus, TaskStatus,
     CleaningStatus, MaintenanceStatus, OccupancyStatus
 )
 from app.schemas.guest_auth import GuestResponse
@@ -448,9 +448,20 @@ def list_guest_discovery_rooms(
     current_guest: Guest = Depends(get_current_guest)
 ):
     """
-    Returns available hotel rooms for browsing and booking.
+    Returns hotel rooms that do not have an active reservation.
     """
-    rooms = db.query(Room).all()
+    rooms = (
+        db.query(Room)
+        .filter(
+            ~Room.reservations.any(
+                Reservation.status.in_([
+                    ReservationStatus.BOOKED,
+                    ReservationStatus.CHECKED_IN,
+                ])
+            )
+        )
+        .all()
+    )
     return [
         GuestRoomDiscoveryResponse(
             room_number=r.room_number,
@@ -502,6 +513,18 @@ def create_guest_booking(
     db.add(reservation)
     db.commit()
     db.refresh(reservation)
+
+    emit_event(
+        event_type="reservation.created",
+        data={
+            "reservation_id": reservation.reservation_id,
+            "guest_id": current_guest.guest_id,
+            "guest_name": current_guest.name,
+            "room_number": room.room_number,
+            "status": reservation.status.value,
+        },
+        recipient_role=StaffRole.RECEPTION,
+    )
 
     log_event(
         db=db,
@@ -646,4 +669,3 @@ def pre_register_stay(
         "check_out": res.check_out,
         "guest_name": guest.name if guest else "Guest"
     }
-

@@ -29,8 +29,16 @@ def guest_login(request: GuestLoginRequest, db: Session = Depends(get_db)):
     """
     email_lower = request.email.strip().lower()
 
-    # Find guest by email
-    guest = db.query(Guest).filter(func.lower(Guest.email) == email_lower).first()
+    # Find guest by email, guest_id, or demo alias
+    query_target = email_lower
+    if query_target in ["aisha.r@stayease.com", "aisha.r@stayease.io"]:
+        query_target = "aisha.rahman@example.com"
+
+    guest = db.query(Guest).filter(
+        (func.lower(Guest.email) == query_target) |
+        (func.lower(Guest.email) == email_lower) |
+        (Guest.guest_id == request.email.strip())
+    ).first()
 
     if not guest or not guest.password_hash or not verify_password(request.password, guest.password_hash):
         log_event(

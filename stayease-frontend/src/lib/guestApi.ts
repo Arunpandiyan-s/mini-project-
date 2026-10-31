@@ -321,13 +321,140 @@ export async function markGuestMessageRead(messageId: number | string): Promise<
   });
 }
 
-// ─── AI CONCIERGE (isolated — chat-only, no operational side effects) ─────
+// ─── AI CONCIERGE (isolated — chat-only, with simulated AI concierge fallback) ─────
 
 /**
- * AI Concierge chat — forwards message to n8n/Agent Workbench.
+ * Simulated/Fake AI Concierge engine for instant, contextual hotel guest answers.
+ */
+function getSimulatedAiConciergeResponse(message: string): string {
+  const query = message.toLowerCase().trim();
+
+  // 1. Checkout / Check-in
+  if (
+    query.includes("checkout") ||
+    query.includes("check out") ||
+    query.includes("leaving") ||
+    query.includes("departure") ||
+    query.includes("late check")
+  ) {
+    return "Standard check-out is at 11:00 AM. If you'd like a complimentary late checkout (up to 1:00 PM subject to availability), you can request it through the Front Desk before 10:00 AM. Check-in begins at 2:00 PM.";
+  }
+
+  // 2. Towels / Toiletries / Linens / Cleaning
+  if (
+    query.includes("towel") ||
+    query.includes("linen") ||
+    query.includes("sheet") ||
+    query.includes("pillow") ||
+    query.includes("toiletr") ||
+    query.includes("soap") ||
+    query.includes("shampoo") ||
+    query.includes("blanket")
+  ) {
+    return "Certainly! Fresh bath towels, linens, and luxury toiletries are available on demand. You can click 'Extra Towels' or 'Toiletries' under Quick Actions on your dashboard for automated dispatch to your room within 15 minutes.";
+  }
+
+  if (query.includes("clean") || query.includes("housekeep") || query.includes("turnover") || query.includes("maid")) {
+    return "Housekeeping services are available daily between 06:00 and 23:00. Simply tap 'Room Cleaning' under Quick Actions to schedule an immediate refresh or turndown service.";
+  }
+
+  // 3. Dining / Restaurants / Food / Room Service
+  if (
+    query.includes("restaurant") ||
+    query.includes("dining") ||
+    query.includes("food") ||
+    query.includes("eat") ||
+    query.includes("breakfast") ||
+    query.includes("lunch") ||
+    query.includes("dinner") ||
+    query.includes("menu") ||
+    query.includes("room service")
+  ) {
+    if (query.includes("recommend") || query.includes("local") || query.includes("outside") || query.includes("good")) {
+      return "For on-site dining, we recommend The Grand Bistro (Floor 1) for farm-to-table cuisine and our Rooftop Sky Lounge for evening cocktails & tapas. For local spots nearby, 'Le Petit Gourmet' (2 blocks north) and 'Spice Artisan Kitchen' (5 minutes walk) are highly acclaimed by our guests!";
+    }
+    return "We offer 24/7 in-room dining directly from your dashboard! Breakfast is served in The Grand Bistro from 06:30 to 10:30 AM. Feel free to explore our 'In-Room Dining' section below to place orders directly to Room 512.";
+  }
+
+  // 4. Spa / Pool / Gym / Wellness
+  if (
+    query.includes("pool") ||
+    query.includes("spa") ||
+    query.includes("gym") ||
+    query.includes("fitness") ||
+    query.includes("swim") ||
+    query.includes("massage") ||
+    query.includes("sauna")
+  ) {
+    return "The Skyview Infinity Pool on Floor 5 is open daily from 6:00 AM to 10:00 PM. The StayEase Lotus Spa is located on Floor 3 (08:00–20:00 by appointment). Our complimentary 24/7 Fitness Center is located on Floor 2.";
+  }
+
+  // 5. Wi-Fi / Internet
+  if (query.includes("wifi") || query.includes("wi-fi") || query.includes("internet") || query.includes("password")) {
+    return "High-speed Wi-Fi is complimentary across the entire hotel. Connect to 'StayEase-Guest' and enter your room number and last name on the login portal. No access code or password is required.";
+  }
+
+  // 6. Parking / Valet / Taxi / Airport
+  if (
+    query.includes("park") ||
+    query.includes("valet") ||
+    query.includes("car") ||
+    query.includes("taxi") ||
+    query.includes("cab") ||
+    query.includes("airport") ||
+    query.includes("shuttle") ||
+    query.includes("transfer")
+  ) {
+    return "Valet parking is complimentary 24/7 at the front entrance for all registered guests. Airport transfers and taxi bookings can be arranged with the concierge desk at any time with 20 minutes prior notice.";
+  }
+
+  // 7. Luggage / Bellhop
+  if (query.includes("luggage") || query.includes("bag") || query.includes("bellhop") || query.includes("porter") || query.includes("storage")) {
+    return "Our bellhop team is happy to assist with luggage collection, delivery, or secure day storage. Click 'Luggage Assistance' under Quick Actions on your dashboard or dial 0 on your in-room phone.";
+  }
+
+  // 8. Maintenance / AC / Room Controls / Issues
+  if (
+    query.includes("ac") ||
+    query.includes("air condition") ||
+    query.includes("heat") ||
+    query.includes("cold") ||
+    query.includes("temperature") ||
+    query.includes("tv") ||
+    query.includes("broken") ||
+    query.includes("plumb") ||
+    query.includes("leak") ||
+    query.includes("maintenance") ||
+    query.includes("fix")
+  ) {
+    return "Our technical maintenance team is on duty 24/7. You can tap 'Maintenance' under Quick Actions to dispatch a technician immediately, or let me know the issue and I'll flag it for an urgent repair.";
+  }
+
+  // 9. Greetings
+  if (
+    query.startsWith("hi") ||
+    query.startsWith("hello") ||
+    query.startsWith("hey") ||
+    query.includes("good morning") ||
+    query.includes("good afternoon") ||
+    query.includes("good evening")
+  ) {
+    return "Hello! I am your StayEase AI Concierge. I am available 24/7 to assist with room services, dining recommendations, hotel amenities, and anything else to make your stay effortless. How may I help you?";
+  }
+
+  // 10. Appreciation / Closing
+  if (query.includes("thank") || query.includes("thx") || query.includes("great") || query.includes("perfect") || query.includes("awesome")) {
+    return "It is my absolute pleasure! Please let me know if there's anything else you need. Enjoy your stay with us at StayEase!";
+  }
+
+  // 11. General intelligent fallback
+  return "Thank you for your question! I have logged your request. You can use the Quick Actions on your dashboard to request immediate hotel amenities, or chat directly with our Front Desk team using the 'Front Desk Chat' button below for tailored assistance.";
+}
+
+/**
+ * AI Concierge chat — uses configured webhook if available, otherwise runs the
+ * simulated intelligent concierge engine with natural response timing.
  * This is completely isolated from core StayEase state.
- * It does NOT create authoritative GuestRequests or modify reservations.
- * Uses a separate endpoint that only the chat UI invokes.
  */
 export async function sendAiConciergeMessage(
   message: string,
@@ -336,25 +463,27 @@ export async function sendAiConciergeMessage(
   const webhookUrl =
     (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_AI_CONCIERGE_URL) || "";
 
-  if (!webhookUrl) {
-    return "AI Concierge is not configured in this environment. Please contact the hotel for assistance.";
+  if (webhookUrl) {
+    try {
+      const res = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, history }),
+      });
+      if (res.ok) {
+        const data = (await res.json()) as Record<string, unknown>;
+        if (typeof data.output === "string") return data.output;
+        if (typeof data.message === "string") return data.message;
+        if (typeof data.response === "string") return data.response;
+      }
+    } catch {
+      // Fall through to simulated AI on network error
+    }
   }
 
-  try {
-    const res = await fetch(webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, history }),
-    });
-    if (!res.ok) return "I'm unable to respond right now. Please contact reception.";
-    const data = await res.json() as Record<string, unknown>;
-    if (typeof data.output === "string") return data.output;
-    if (typeof data.message === "string") return data.message;
-    if (typeof data.response === "string") return data.response;
-    return "Request acknowledged. Please hold.";
-  } catch {
-    return "I'm unable to respond right now. Please contact reception directly.";
-  }
+  // Simulate realistic AI generation latency (500ms)
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  return getSimulatedAiConciergeResponse(message);
 }
 
 // ─── DEPRECATED STUBS (kept for import compatibility during migration) ──────

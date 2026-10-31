@@ -154,6 +154,7 @@ export function AppShell({ children }: { children: ReactNode }) {
     onTaskUpdated: handleTaskEvent,
     onTaskReassigned: handleTaskEvent,
     onTaskRemoved: handleTaskEvent,
+    onReservationCreated: handleTaskEvent,
     onRoomDirty: handleRoomEvent,
     onRoomCleaning: handleRoomEvent,
     onRoomClean: handleRoomEvent,

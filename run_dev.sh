@@ -34,7 +34,7 @@ BACKEND_PID=$!
 # 2. Start Unified Frontend
 echo "[Frontend] Launching TanStack Start / Vite on http://localhost:5173 ..."
 cd "$ROOT_DIR/stayease-frontend"
-npm run dev -- --port 5173 &
+npm run dev -- --port 5173 --host 127.0.0.1 &
 FRONTEND_PID=$!
 
 echo ""

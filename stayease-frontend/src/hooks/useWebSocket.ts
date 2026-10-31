@@ -27,6 +27,8 @@ export type StaffWSHandlers = {
   onGuestRequestCancelled?: (data: Record<string, unknown>) => void;
   /** Called when a reservation is checked in */
   onReservationCheckedIn?: (data: Record<string, unknown>) => void;
+  /** Called when a new reservation is created */
+  onReservationCreated?: (data: Record<string, unknown>) => void;
   /** Called when a reservation is checked out */
   onReservationCheckedOut?: (data: Record<string, unknown>) => void;
   /** Called when room becomes dirty */
@@ -77,6 +79,7 @@ export function useStaffWebSocket(
     reg("task.completed", handlers.onTaskUpdated);
     reg("guest_request.created", handlers.onGuestRequestCreated);
     reg("guest_request.cancelled", handlers.onGuestRequestCancelled);
+    reg("reservation.created", handlers.onReservationCreated);
     reg("reservation.checked_in", handlers.onReservationCheckedIn);
     reg("reservation.checked_out", handlers.onReservationCheckedOut);
     reg("room.dirty", handlers.onRoomDirty);

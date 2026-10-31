@@ -91,7 +91,7 @@ export function UnifiedCategorizedLoginPage() {
   };
 
   const autoFillGuest = () => {
-    setGuestId("aisha.r@stayease.com");
+    setGuestId("aisha.rahman@example.com");
     setGuestPassword("stayease");
     setGuestError(null);
   };

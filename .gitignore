@@ -21,10 +21,15 @@ venv/
 # Databases & local environment
 stayease.db
 *.db-journal
-.env
-**/.env
-.env.local
+.env*
+**/.env*
+!.env.example
+!**/.env.example
 *.log
+
+# Playwright MCP testing artifacts
+.playwright-mcp/
+**/.playwright-mcp/
 
 # Deployment-generated files
 .vercel/
