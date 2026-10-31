@@ -130,8 +130,8 @@ def start_task(task_id: str, current_staff: Staff, db: Session) -> Task:
         task.status = TaskStatus.IN_PROGRESS
         task.started_at = now
 
-        # Checkout cleaning room transition: DIRTY -> CLEANING
-        if task.source_type == "checkout":
+        # Housekeeping cleaning room transition: DIRTY -> CLEANING
+        if task.source_type in ["checkout", "room_cleaning", "inspection_failed"] or (task.department == Department.HOUSEKEEPING and task.room):
             room = task.room
             if room:
                 room.cleaning_status = CleaningStatus.CLEANING
@@ -270,8 +270,8 @@ def complete_task(task_id: str, current_staff: Staff, db: Session) -> Task:
         task.status = TaskStatus.COMPLETED
         task.completed_at = now
 
-        # Checkout cleaning room transition: CLEANING -> CLEAN
-        if task.source_type == "checkout":
+        # Housekeeping cleaning room transition: CLEANING -> CLEAN
+        if (task.source_type in ["checkout", "room_cleaning", "inspection_failed"] or task.department == Department.HOUSEKEEPING) and task.room:
             room = task.room
             if room:
                 room.cleaning_status = CleaningStatus.CLEAN

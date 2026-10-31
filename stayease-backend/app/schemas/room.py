@@ -46,9 +46,22 @@ class RoomUpdate(BaseModel):
     floor: Optional[int] = Field(None, ge=1)
 
 class RoomInspectionRequest(BaseModel):
-    status: str = Field(..., description="'pass' or 'fail'")
+    status: str = Field("pass", description="'pass' or 'fail'")
     reason: Optional[str] = Field(None, description="Reason if inspection failed")
     notes: Optional[str] = Field(None, description="General inspection notes")
+
+    @model_validator(mode="before")
+    @classmethod
+    def handle_inspection_aliases(cls, data):
+        if isinstance(data, dict):
+            if "status" not in data and "passed" in data:
+                data["status"] = "pass" if data["passed"] else "fail"
+        return data
+
+class RoomCleaningRequest(BaseModel):
+    notes: Optional[str] = Field(None, description="Cleaning notes or instructions")
+    cleaning_type: Optional[str] = Field("Standard Cleaning", description="Type of cleaning (Standard, Deep Clean, Turnover)")
+    priority: Optional[str] = Field("high", description="low, medium, high, urgent")
 
 class RoomMaintenanceReportRequest(BaseModel):
     issue: str = Field(..., min_length=3, max_length=500, description="Detailed defect description")

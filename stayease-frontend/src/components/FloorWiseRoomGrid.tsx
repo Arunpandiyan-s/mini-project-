@@ -309,6 +309,29 @@ export function FloorWiseRoomGrid() {
     setRoomStatus(roomNum, "Cleaning");
     toast.info(`Room ${roomNum} marked for cleaning.`);
     pushActivity(`Room ${roomNum} marked for cleaning.`);
+
+    const newHkTask: Task = {
+      id: `T-HK-${roomNum}-${Date.now().toString().slice(-4)}`,
+      room: roomNum,
+      type: "Turnover Cleaning",
+      role: "housekeeping",
+      priority: "High",
+      assignedTo: "Elena Rostova",
+      assignedAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      eta: "30 min",
+      description: `Turnover cleaning requested for Room ${roomNum}. Inspection & sanitization required.`,
+      status: "Pending",
+    };
+    setTasks((prev) => [newHkTask, ...prev]);
+
+    import("@/lib/api").then(({ requestRoomCleaning }) => {
+      void requestRoomCleaning(roomNum, {
+        notes: `Turnover cleaning requested for Room ${roomNum}. Inspection & sanitization required.`,
+        cleaning_type: "Turnover Cleaning",
+        priority: "high",
+      }).catch(() => {});
+    });
+
     void triggerN8nWebhook("room_status_changed", { roomNumber: roomNum, status: "Cleaning" });
   };
 

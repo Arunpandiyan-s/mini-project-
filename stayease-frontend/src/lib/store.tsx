@@ -1284,14 +1284,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         if (newTask.role === "maintenance") {
           setRooms((prev) =>
-prev.map((r) => (r.number === taskData.room ? { ...r, status: "Maintenance" } : r))
+            prev.map((r) => (r.number === taskData.room ? { ...r, status: "Maintenance" } : r))
           );
           import("@/lib/api").then(({ reportRoomMaintenance }) => {
             void reportRoomMaintenance(taskData.room, {
               issue: taskData.description || taskData.type,
               priority: String(aiPriority).toLowerCase(),
               blocks_occupancy: true,
-                        }).catch(() => {});
+            }).catch(() => {});
+          });
+        }
+
+        if (newTask.role === "housekeeping") {
+          setRooms((prev) =>
+            prev.map((r) => (r.number === taskData.room ? { ...r, status: "Cleaning" } : r))
+          );
+          import("@/lib/api").then(({ requestRoomCleaning }) => {
+            void requestRoomCleaning(taskData.room, {
+              notes: taskData.description || taskData.type,
+              cleaning_type: taskData.type || "Standard Cleaning",
+              priority: String(aiPriority).toLowerCase(),
+            }).catch(() => {});
           });
         }
 
@@ -1625,6 +1638,32 @@ prev.map((r) => (r.number === taskData.room ? { ...r, status: "Maintenance" } : 
                 issue: req.description || req.type || "Maintenance Request",
                 priority: req.priority.toLowerCase(),
                 blocks_occupancy: true,
+              }).catch(() => {});
+            });
+          }
+        }
+
+        if (targetDept.toLowerCase().includes("housekeep") || targetDept.toLowerCase().includes("clean")) {
+          const req = realtimeRequests.find((r) => r.id === id);
+          if (req) {
+            const hkTask: Task = {
+              id: `T-HK-${req.roomNumber}-${Date.now().toString().slice(-4)}`,
+              room: req.roomNumber,
+              type: req.type || "Room Cleaning",
+              role: "housekeeping",
+              priority: req.priority === "Emergency" || req.priority === "High" ? "Urgent" : "High",
+              assignedTo: "Elena Rostova",
+              assignedAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+              eta: "30 min",
+              description: req.description || `Cleaning request for Room ${req.roomNumber}`,
+              status: "Pending",
+            };
+            setTasks((prev) => [hkTask, ...prev]);
+            import("@/lib/api").then(({ requestRoomCleaning }) => {
+              void requestRoomCleaning(req.roomNumber, {
+                notes: req.description || req.type || "Cleaning Request",
+                cleaning_type: req.type || "Standard Cleaning",
+                priority: (req.priority || "high").toLowerCase(),
               }).catch(() => {});
             });
           }

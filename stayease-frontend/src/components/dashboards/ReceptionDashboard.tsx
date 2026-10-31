@@ -428,6 +428,173 @@ function BookMaintenanceModal() {
   );
 }
 
+/* ─── PASS FOR CLEANING MODAL POPUP ──────────────────────────────────── */
+function PassForCleaningModal() {
+  const { rooms, setTasks, setRoomStatus, pushActivity } = useApp();
+  const [open, setOpen] = useState(false);
+  const [roomNumber, setRoomNumber] = useState("");
+  const [cleaningType, setCleaningType] = useState("Turnover Cleaning");
+  const [priority, setPriority] = useState<Priority>("High");
+  const [assignedStaff, setAssignedStaff] = useState("Elena Rostova");
+  const [notes, setNotes] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!roomNumber.trim()) {
+      toast.error("Please select or enter a room number.");
+      return;
+    }
+
+    setSubmitting(true);
+    const taskId = `T-HK-${roomNumber}-${Date.now().toString().slice(-4)}`;
+    const fullNotes = notes.trim() || `${cleaningType} requested by Reception`;
+
+    const newHkTask: Task = {
+      id: taskId,
+      room: roomNumber,
+      type: cleaningType,
+      role: "housekeeping",
+      priority: priority,
+      assignedTo: assignedStaff,
+      assignedAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      eta: "30 min",
+      description: fullNotes,
+      status: "Pending",
+    };
+
+    setTasks((prev) => [newHkTask, ...prev]);
+    setRoomStatus(roomNumber, "Cleaning");
+
+    try {
+      const { requestRoomCleaning } = await import("@/lib/api");
+      await requestRoomCleaning(roomNumber, {
+        notes: fullNotes,
+        cleaning_type: cleaningType,
+        priority: priority.toLowerCase(),
+      });
+      toast.success(`Cleaning dispatched for Room ${roomNumber}! Assigned to ${assignedStaff}.`);
+    } catch {
+      toast.success(`Cleaning task dispatched locally for Room ${roomNumber}.`);
+    }
+
+    pushActivity(`Reception passed Room ${roomNumber} for cleaning: ${cleaningType} (${assignedStaff})`);
+    setSubmitting(false);
+    setOpen(false);
+    setRoomNumber("");
+    setNotes("");
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          size="lg"
+          variant="outline"
+          onClick={() => setOpen(true)}
+          className="h-13 px-6 rounded-2xl font-bold text-base border-sky-500/40 text-sky-700 dark:text-sky-300 bg-sky-500/10 hover:bg-sky-500/20 shadow-sm flex items-center gap-2"
+        >
+          <Sparkles className="size-5 text-sky-500" /> Pass for Cleaning
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl p-6 bg-card border-border shadow-2xl">
+        <DialogHeader>
+          <DialogTitle className="font-display text-2xl font-bold flex items-center gap-2 text-foreground">
+            <Sparkles className="size-6 text-sky-500" />
+            Pass Room for Cleaning
+          </DialogTitle>
+          <DialogDescription className="text-xs">
+            Send immediate housekeeping turnover or refresh request. Synchronizes live to Elena Rostova's task roster.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+          <div className="space-y-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Room Number *</label>
+            <select
+              value={roomNumber}
+              onChange={(e) => setRoomNumber(e.target.value)}
+              required
+              className="w-full h-11 px-3 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="">Select a room</option>
+              {rooms.map((r) => (
+                <option key={r.number} value={r.number}>
+                  Room {r.number} (Floor {r.floor} · {r.status})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Cleaning Type</label>
+              <select
+                value={cleaningType}
+                onChange={(e) => setCleaningType(e.target.value)}
+                className="w-full h-11 px-3 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="Turnover Cleaning">Turnover Deep Clean</option>
+                <option value="Daily Standard Refresh">Daily Standard Refresh</option>
+                <option value="Linen & Towel Replacement">Linen & Towel Replacement</option>
+                <option value="VIP Pre-Arrival Prep">VIP Pre-Arrival Prep</option>
+                <option value="Post-Maintenance Sanitization">Post-Maintenance Sanitization</option>
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Priority</label>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value as Priority)}
+                className="w-full h-11 px-3 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              >
+                <option value="Urgent">Urgent (Express)</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Assigned Housekeeper</label>
+            <select
+              value={assignedStaff}
+              onChange={(e) => setAssignedStaff(e.target.value)}
+              className="w-full h-11 px-3 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="Elena Rostova">Elena Rostova (Lead Housekeeper · On Duty)</option>
+              <option value="Grace Okafor">Grace Okafor (Housekeeping)</option>
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Specific Notes / Special Request</label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={3}
+              placeholder="e.g. Guest checked out early, replace bed runner, restock coffee pods..."
+              className="w-full px-3 py-2 rounded-xl border border-border bg-transparent text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-none text-foreground"
+            />
+          </div>
+
+          <div className="flex gap-2 pt-2">
+            <Button type="button" variant="secondary" className="flex-1 h-12 rounded-xl font-bold" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={submitting} className="flex-1 h-12 rounded-xl font-bold text-base bg-sky-600 hover:bg-sky-700 text-white gap-2">
+              <Sparkles className="size-4" /> {submitting ? "Dispatching..." : "Dispatch Cleaning"}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
 /* ─── PRE-REGISTRATION APPROVALS ───────────────────────────────────── */
 function PreRegistrationPanel() {
@@ -1031,10 +1198,11 @@ export function ReceptionDashboard() {
               <div>
                 <h3 className="text-xl font-bold text-foreground">Offline Bookings & Maintenance Dispatch</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Create offline bookings for walk-ins or log maintenance defects with real-time dispatch to technicians.
+                  Create offline bookings for walk-ins, pass rooms for immediate housekeeping turnover, or log maintenance defects with real-time dispatch.
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-3">
+                <PassForCleaningModal />
                 <BookMaintenanceModal />
                 <NewBookingModal />
               </div>

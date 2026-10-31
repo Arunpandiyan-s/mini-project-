@@ -13,10 +13,11 @@ from app.models.enums import (
 from app.core.dependencies import require_roles, get_current_staff
 from app.schemas.room import (
     RoomCreate, RoomUpdate, RoomResponse, RoomOperationalResponse,
-    RoomInspectionRequest, RoomMaintenanceReportRequest
+    RoomInspectionRequest, RoomMaintenanceReportRequest, RoomCleaningRequest
 )
 from app.services.audit_service import log_event
 from app.services.reservation_service import check_reservation_overlap
+from app.services.assignment_service import assign_task_round_robin
 from app.services.event_service import emit_event
 from app.services.notification_service import create_notification
 from app.models.staff import Staff
@@ -349,5 +350,106 @@ def report_room_maintenance(
         "message": f"Maintenance reported for room {room.room_number}",
         "task_id": maint_task.task_id,
         "room_maintenance_status": room.maintenance_status.value
+    }
+
+@router.post("/{room_number}/clean")
+def request_room_cleaning(
+    room_number: str,
+    request: Optional[RoomCleaningRequest] = None,
+    db: Session = Depends(get_db),
+    current_staff: Staff = Depends(get_current_staff)
+):
+    """
+    Mark room for cleaning and automatically dispatch housekeeping cleaning task.
+    Updates room cleaning status to DIRTY, assigns task to housekeeping staff (round-robin),
+    and notifies housekeeping team via real-time WebSocket.
+    """
+    room = db.query(Room).filter(func.lower(Room.room_number) == room_number.lower()).first()
+    if not room:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Room '{room_number}' not found"
+        )
+
+    req = request or RoomCleaningRequest()
+    priority_map = {
+        "low": TaskPriority.LOW,
+        "medium": TaskPriority.MEDIUM,
+        "high": TaskPriority.HIGH,
+        "urgent": TaskPriority.URGENT
+    }
+    p_val = priority_map.get((req.priority or "high").lower(), TaskPriority.HIGH)
+    clean_type = req.cleaning_type or "Room Cleaning"
+
+    room.cleaning_status = CleaningStatus.DIRTY
+
+    task_id = f"TSK-HK-{int(datetime.now(timezone.utc).timestamp() * 1000) % 900000}"
+    cleaning_task = Task(
+        task_id=task_id,
+        source_type="room_cleaning",
+        source_id=room.room_number,
+        room_id=room.id,
+        department=Department.HOUSEKEEPING,
+        title=f"{clean_type}: Room {room.room_number}",
+        description=req.notes or f"Room cleaning requested for Room {room.room_number}. {clean_type} required.",
+        priority=p_val,
+        status=TaskStatus.PENDING
+    )
+    db.add(cleaning_task)
+    db.flush()
+
+    assigned_staff = assign_task_round_robin(cleaning_task, db)
+    db.commit()
+    db.refresh(cleaning_task)
+    db.refresh(room)
+
+    log_event(
+        db,
+        event_type="ROOM_CLEANING_REQUESTED",
+        actor_type="staff",
+        actor_id=current_staff.staff_id,
+        entity_type="room",
+        entity_id=room.room_number,
+        description=f"Cleaning requested for Room {room.room_number} by {current_staff.name} ({clean_type})"
+    )
+    create_notification(
+        db,
+        recipient_staff_id="ALL_HOUSEKEEPING",
+        type="room.cleaning",
+        title="Room Cleaning Requested",
+        message=f"Room {room.room_number} needs cleaning ({clean_type}).",
+        entity_type="room",
+        entity_id=room.room_number,
+        priority=p_val.value
+    )
+    emit_event(
+        "task.created",
+        {
+            "task_id": cleaning_task.task_id,
+            "room_number": room.room_number,
+            "title": cleaning_task.title,
+            "department": "housekeeping",
+            "priority": p_val.value,
+            "status": cleaning_task.status.value,
+            "assigned_staff_id": assigned_staff.staff_id if assigned_staff else None
+        },
+        recipient_role=StaffRole.HOUSEKEEPING,
+        send_to_all_admins=True
+    )
+    emit_event(
+        "room.dirty",
+        {
+            "room_number": room.room_number,
+            "cleaning_status": room.cleaning_status.value
+        },
+        recipient_role=StaffRole.HOUSEKEEPING,
+        send_to_all_admins=True
+    )
+
+    return {
+        "status": "success",
+        "message": f"Cleaning task created for room {room.room_number}",
+        "task_id": cleaning_task.task_id,
+        "room_cleaning_status": room.cleaning_status.value
     }
 

@@ -390,8 +390,31 @@ export async function inspectRoom(
 ): Promise<ApiRoom> {
   return apiFetch<ApiRoom>(`/api/rooms/${roomNumber}/inspection`, {
     method: "POST",
-    body: JSON.stringify({ passed, notes: notes || "" }),
+    body: JSON.stringify({
+      status: passed ? "pass" : "fail",
+      passed,
+      reason: !passed ? notes || "Inspection failed" : undefined,
+      notes: notes || "",
+    }),
   });
+}
+
+/** POST /api/rooms/{room_number}/clean — Request room cleaning and dispatch housekeeping task */
+export async function requestRoomCleaning(
+  roomNumber: string,
+  payload?: { notes?: string; cleaning_type?: string; priority?: string }
+): Promise<{ status: string; task_id: string; room_number: string; room_cleaning_status: string }> {
+  return apiFetch<{ status: string; task_id: string; room_number: string; room_cleaning_status: string }>(
+    `/api/rooms/${roomNumber}/clean`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        notes: payload?.notes || "Turnover cleaning requested.",
+        cleaning_type: payload?.cleaning_type || "Standard Cleaning",
+        priority: (payload?.priority || "high").toLowerCase(),
+      }),
+    }
+  );
 }
 
 /** POST /api/rooms/{room_number}/maintenance — Report room defect and dispatch maintenance task */
