@@ -373,11 +373,11 @@ export function OperationsMonitoringPanel() {
                       <td className="p-3 uppercase font-bold text-muted-foreground text-[10px]">{task.role}</td>
                       <td className="p-3">
                         <select
-                          value={task.assignedTo || "Grace Okafor"}
+                          value={task.assignedTo || "Elena Rostova"}
                           onChange={(e) => reassignTask(task.id, e.target.value)}
                           className="bg-transparent border border-border rounded-lg px-2 py-1 text-xs font-semibold text-foreground focus:outline-none"
                         >
-                          {STAFF_LIST.map((s) => (
+                          {staffList.map((s) => (
                             <option key={s.name} value={s.name}>{s.name}</option>
                           ))}
                         </select>
