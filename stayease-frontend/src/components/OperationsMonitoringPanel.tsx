@@ -501,7 +501,7 @@ export function OperationsMonitoringPanel() {
                   onChange={(e) => setNewTaskAssignedTo(e.target.value)}
                   className="w-full h-11 px-3 rounded-xl border border-border bg-card text-foreground text-sm font-semibold focus:outline-none"
                 >
-                  {STAFF_LIST.map((s) => (
+                  {staffList.map((s) => (
                     <option key={s.name} value={s.name}>{s.name} ({s.role})</option>
                   ))}
                 </select>
