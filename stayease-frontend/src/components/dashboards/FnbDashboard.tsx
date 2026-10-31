@@ -57,9 +57,6 @@ export function FnbDashboard() {
       );
     }
   }, [staff]);
-    "O-704": "10 min",
-    "O-705": "15 min",
-  });
 
   const toggleChefDuty = (chefId: string) => {
     setChefs((prev) =>
